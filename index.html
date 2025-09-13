@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Editor</title>
+    <style>
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        .panel {
+            width: 50%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #html-source {
+            width: 100%;
+            height: 300px;
+        }
+        #editor {
+            border: 1px solid black;
+            min-height: 300px;
+            height: 100%;
+        }
+        #cli-container {
+            padding: 10px;
+        }
+        #cli-output {
+            height: 150px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 5px;
+            margin-bottom: 5px;
+        }
+        #cli-input {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Editor</h1>
+    <div class="container">
+        <div class="panel">
+            <h2>HTML Source</h2>
+            <textarea id="html-source"></textarea>
+        </div>
+        <div class="panel">
+            <h2>Rendered Text</h2>
+            <div id="editor" contenteditable="true"></div>
+        </div>
+    </div>
+    <div id="cli-container">
+        <div id="cli-output"></div>
+        <input id="cli-input" type="text" placeholder="Enter command...">
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const htmlSource = document.getElementById('html-source');
+        const cliInput = document.getElementById('cli-input');
+        const cliOutput = document.getElementById('cli-output');
+
+        function updateHtmlSource() {
+            htmlSource.value = editor.innerHTML;
+        }
+
+        function updateEditor() {
+            editor.innerHTML = htmlSource.value;
+        }
+
+        editor.addEventListener('input', updateHtmlSource);
+        htmlSource.addEventListener('input', updateEditor);
+
+        function appendOutput(text) {
+            const p = document.createElement('p');
+            p.textContent = text;
+            cliOutput.appendChild(p);
+            cliOutput.scrollTop = cliOutput.scrollHeight;
+        }
+
+        cliInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const command = cliInput.value;
+                cliInput.value = '';
+                appendOutput(`> ${command}`);
+                
+                const parts = command.split(' ');
+                const cmd = parts[0].toLowerCase();
+                
+                let response, data;
+
+                switch (cmd) {
+                    case 'bold':
+                    case 'italic':
+                        const start = parseInt(parts[1]);
+                        const end = parseInt(parts[2]);
+                        if (isNaN(start) || isNaN(end)) {
+                            appendOutput(`Usage: ${cmd} <start> <end>`);
+                            break;
+                        }
+                        response = await fetch(`/format/${cmd}`,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ start: start, end: end })
+                            });
+                        data = await response.json();
+                        htmlSource.value = data.content;
+                        updateEditor();
+                        appendOutput(`${cmd} applied from ${start} to ${end}.`);
+                        break;
+                    case 'find':
+                        const searchTerm = parts.slice(1).join(' ');
+                        response = await fetch('/find',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ search_term: searchTerm })
+                            });
+                        data = await response.json();
+                        if (data.occurrences && data.occurrences.length > 0) {
+                            let output = 'Found at positions:';
+                            data.occurrences.forEach(occ => {
+                                output += ` [${occ[0]}-${occ[1]}]`;
+                            });
+                            appendOutput(output);
+                        } else {
+                            appendOutput('No occurrences found.');
+                        }
+                        break;
+                    case 'insert':
+                        const pos = parseInt(parts[1]);
+                        if (isNaN(pos)) {
+                            appendOutput('Usage: insert <pos> <text>');
+                            break;
+                        }
+                        const text = parts.slice(2).join(' ');
+                        response = await fetch('/insert',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ pos: pos, text: text })
+                            });
+                        data = await response.json();
+                        htmlSource.value = data.content;
+                        updateEditor();
+                        appendOutput(`Text inserted at position ${pos}.`);
+                        break;
+                    case 'delete':
+                        const del_start = parseInt(parts[1]);
+                        const del_end = parseInt(parts[2]);
+                        response = await fetch('/delete',
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ start: del_start, end: del_end })
+                            });
+                        data = await response.json();
+                        htmlSource.value = data.content;
+                        updateEditor();
+                        appendOutput(`Text deleted from ${del_start} to ${del_end}.`);
+                        break;
+                    case 'help':
+                        appendOutput('Available commands: bold <start> <end>, italic <start> <end>, find <term>, insert <pos> <text>, delete <start> <end>');
+                        break;
+                    default:
+                        appendOutput(`Unknown command: ${cmd}. Type 'help' for a list of commands.`);
+                }
+            }
+        });
+
+        // Load initial content
+        window.onload = async () => {
+            const response = await fetch('/document');
+            const data = await response.json();
+            htmlSource.value = data.content;
+            updateEditor();
+            appendOutput("Welcome to the editor CLI. Type 'help' for a list of commands.");
+        };
+    </script>
+</body>
+</html>
