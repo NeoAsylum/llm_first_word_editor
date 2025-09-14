@@ -18,13 +18,13 @@ doc = documentObject(
     _footer=stringObject(id=1, content=""), # Temporary footer
     _next_id=2 # Starting ID for content
 )
+
 doc.set_header(doc.create_string_object(content="My Header"))
 doc.set_footer(doc.create_string_object(content="Page 1"))
 
 doc.insert(doc.create_string_object(content="This is a "), 0)
 doc.insert(doc.create_string_object(content="sample", bold=True), 1)
 doc.insert(doc.create_string_object(content=" document."), 2)
-
 
 # --- Request Models ---
 

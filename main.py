@@ -9,18 +9,6 @@ mcp = FastMCP(name="My MCP Server")
 # --- Editor Tools ---
 EDITOR_API_URL = "http://localhost:8001"
 
-def _json_to_markdown(content_list: List[Dict[str, Any]]) -> str:
-    """Converts a list of stringObjects (as dicts) to a markdown string."""
-    md_string = ""
-    for item in content_list:
-        text = item.get('content', '')
-        if item.get('bold'):
-            text = f"**{text}**"
-        if item.get('italic'):
-            text = f"*{text}*"
-        md_string += text
-    return md_string
-
 @mcp.tool
 def get_document() -> str:
     """Gets the current content of the document."""
@@ -28,7 +16,7 @@ def get_document() -> str:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
-                return _json_to_markdown(data)
+                return data
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
@@ -69,7 +57,7 @@ def italic(so_id: int) -> str:
         return f"Error applying italic: {e}"
 
 @mcp.tool
-def find(search_term: str) -> str:
+def find(search_term: str) -> list[dict]: # Change return type hint
     """Finds all occurrences of a search term in the document body."""
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
@@ -81,17 +69,12 @@ def find(search_term: str) -> str:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
-                if data:
-                    output = "Found at positions:\n"
-                    for item in data:
-                        output += f"  ID: {item.get('id')}, Indices: {item.get('indices')}\n"
-                    return output
-                else:
-                    return "No occurrences found."
+                return data # Return the raw JSON data
             else:
-                return f"Error: Received status {response.status}"
+                # Return an error structure that Gemini might understand
+                return {"error": f"Received status {response.status}"}
     except Exception as e:
-        return f"Error finding text: {e}"
+        return {"error": f"Error finding text: {e}"}
 
 @mcp.tool
 def insert(so_content: str, index: int, bold: bool = False, italic: bool = False) -> str:
@@ -136,7 +119,7 @@ def get_header() -> str:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/header") as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
-                return _json_to_markdown([data]) # Header is a single stringObject
+                return [data] # Header is a single stringObject
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
@@ -168,7 +151,7 @@ def get_footer() -> str:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/footer") as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
-                return _json_to_markdown([data]) # Footer is a single stringObject
+                return [data] # Footer is a single stringObject
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
