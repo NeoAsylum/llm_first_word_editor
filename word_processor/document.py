@@ -1,41 +1,32 @@
 from typing import List
 from pydantic import BaseModel
-from .word import stringObject
+from .word import Word
 import html
 from html.parser import HTMLParser
 
-class documentObject(BaseModel):
+class Document(BaseModel):
     _next_id: int = 0
-    _header: stringObject
-    _content: List[stringObject] = []
-    _footer: stringObject
+    _header: Word
+    _content: List[Word] = []
+    _footer: Word
 
-    def create_string_object(self, **kwargs) -> stringObject:
+    def create_word(self, **kwargs) -> Word:
         if 'id' not in kwargs or kwargs['id'] is None:
             kwargs['id'] = self._next_id
             self._next_id += 1
-        return stringObject(**kwargs)
+        return Word(**kwargs)
 
     def to_html(self) -> str:
-        def string_obj_to_html(so: stringObject) -> str:
-            text = so.content
-            text = html.escape(text)
-            if so.bold:
-                text = f"<b>{text}</b>"
-            if so.italic:
-                text = f"<i>{text}</i>"
-            return text
-
         html_parts = []
         if self._header and self._header.content:
-            html_parts.append(f"<header>{string_obj_to_html(self._header)}</header>")
+            html_parts.append(f"<header>{self._header.to_html()}</header>")
         
         if self._content:
-            main_content = "".join(string_obj_to_html(so) for so in self._content)
+            main_content = "".join(so.to_html() for so in self._content)
             html_parts.append(f"<main>{main_content}</main>")
 
         if self._footer and self._footer.content:
-            html_parts.append(f"<footer>{string_obj_to_html(self._footer)}</footer>")
+            html_parts.append(f"<footer>{self._footer.to_html()}</footer>")
             
         return "\n".join(html_parts)
 
@@ -50,7 +41,7 @@ class documentObject(BaseModel):
                 })
         return results
 
-    def insert(self, so: stringObject, index: int):
+    def insert(self, so: Word, index: int):
         if index < 0 or index > len(self._content):
             raise IndexError("Index out of range.")
         self._content.insert(index, so)
@@ -64,7 +55,7 @@ class documentObject(BaseModel):
         if so_to_delete:
             self._content.remove(so_to_delete)
         else:
-            raise ValueError(f"stringObject with id {so_id} not found.")
+            raise ValueError(f"Word with id {so_id} not found.")
 
     def switchBoldness(self, so_id: int):
         if self._header.id == so_id:
@@ -77,7 +68,7 @@ class documentObject(BaseModel):
             if so.id == so_id:
                 so.bold = not so.bold
                 return
-        raise ValueError(f"stringObject with id {so_id} not found.")
+        raise ValueError(f"Word with id {so_id} not found.")
 
     def switchItalic(self, so_id: int):
         if self._header.id == so_id:
@@ -90,21 +81,21 @@ class documentObject(BaseModel):
             if so.id == so_id:
                 so.italic = not so.italic
                 return
-        raise ValueError(f"stringObject with id {so_id} not found.")
+        raise ValueError(f"Word with id {so_id} not found.")
 
-    def get_content(self) -> List[stringObject]:
+    def get_content(self) -> List[Word]:
         return self._content
 
-    def get_header(self) -> stringObject:
+    def get_header(self) -> Word:
         return self._header
 
-    def set_header(self, header: stringObject):
+    def set_header(self, header: Word):
         self._header = header
 
-    def get_footer(self) -> stringObject:
+    def get_footer(self) -> Word:
         return self._footer
 
-    def set_footer(self, footer: stringObject):
+    def set_footer(self, footer: Word):
         self._footer = footer
 
     def get_next_id(self) -> int:

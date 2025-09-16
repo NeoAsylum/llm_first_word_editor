@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional, List
+import html
 
-class stringObject(BaseModel):
+class Word(BaseModel):
     id: Optional[int] = None
     content: str
     bold: bool = False
@@ -20,3 +21,11 @@ class stringObject(BaseModel):
             indices.append(pos)
             start_index = pos + 1
         return indices
+
+    def to_html(self) -> str:
+        text = html.escape(self.content)
+        if self.bold:
+            text = f"<b>{text}</b>"
+        if self.italic:
+            text = f"<i>{text}</i>"
+        return text

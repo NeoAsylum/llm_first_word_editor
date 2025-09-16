@@ -24,7 +24,7 @@ def get_document() -> str:
 
 @mcp.tool
 def bold(so_id: int) -> str:
-    """Applies bold formatting to a stringObject by its ID."""
+    """Applies bold formatting to a Word by its ID."""
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/format/bold/{so_id}",
         headers={'Content-Type': 'application/json'},
@@ -41,7 +41,7 @@ def bold(so_id: int) -> str:
 
 @mcp.tool
 def italic(so_id: int) -> str:
-    """Applies italic formatting to a stringObject by its ID."""
+    """Applies italic formatting to a Word by its ID."""
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/format/italic/{so_id}",
         headers={'Content-Type': 'application/json'},
@@ -78,11 +78,11 @@ def find(search_term: str) -> list[dict]: # Change return type hint
 
 @mcp.tool
 def insert(so_content: str, index: int, bold: bool = False, italic: bool = False) -> str:
-    """Inserts a new stringObject at a given index in the document content."""
-    new_so = {"content": so_content, "bold": bold, "italic": italic}
+    """Inserts a new Word at a given index in the document content."""
+    new_word = {"content": so_content, "bold": bold, "italic": italic}
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/insert_object",
-        data=json.dumps({"so": new_so, "index": index}).encode(),
+        data=json.dumps({"so": new_word, "index": index}).encode(),
         headers={'Content-Type': 'application/json'},
         method='POST'
     )
@@ -97,7 +97,7 @@ def insert(so_content: str, index: int, bold: bool = False, italic: bool = False
 
 @mcp.tool
 def delete(so_id: int) -> str:
-    """Deletes a stringObject by its ID from the document content."""
+    """Deletes a Word by its ID from the document content."""
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/delete_object/{so_id}",
         headers={'Content-Type': 'application/json'},
@@ -119,7 +119,7 @@ def get_header() -> str:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/header") as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
-                return [data] # Header is a single stringObject
+                return [data] # Header is a single Word
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
@@ -128,10 +128,10 @@ def get_header() -> str:
 @mcp.tool
 def set_header(content: str, bold: bool = False, italic: bool = False) -> str:
     """Sets the content of the header."""
-    new_header_so = {"content": content, "bold": bold, "italic": italic}
+    new_header_word = {"content": content, "bold": bold, "italic": italic}
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/header",
-        data=json.dumps({"header": new_header_so}).encode(),
+        data=json.dumps({"header": new_header_word}).encode(),
         headers={'Content-Type': 'application/json'},
         method='PUT'
     )
@@ -151,7 +151,7 @@ def get_footer() -> str:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/footer") as response:
             if response.status == 200:
                 data = json.loads(response.read().decode())
-                return [data] # Footer is a single stringObject
+                return [data] # Footer is a single Word
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
@@ -160,10 +160,10 @@ def get_footer() -> str:
 @mcp.tool
 def set_footer(content: str, bold: bool = False, italic: bool = False) -> str:
     """Sets the content of the footer."""
-    new_footer_so = {"content": content, "bold": bold, "italic": italic}
+    new_footer_word = {"content": content, "bold": bold, "italic": italic}
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/footer",
-        data=json.dumps({"footer": new_footer_so}).encode(),
+        data=json.dumps({"footer": new_footer_word}).encode(),
         headers={'Content-Type': 'application/json'},
         method='PUT'
     )

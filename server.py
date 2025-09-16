@@ -6,42 +6,42 @@ from typing import List
 
 import os
 
-from word_processor.document import documentObject
-from word_processor.word import stringObject
+from word_processor.document import Document
+from word_processor.word import Word
 
 app = FastAPI()
 
 # Global document instance
 # Initializing with default values, then setting content using methods
-doc = documentObject(
-    _header=stringObject(id=0, content=""), # Temporary header
-    _footer=stringObject(id=1, content=""), # Temporary footer
+doc = Document(
+    _header=Word(id=0, content=""), # Temporary header
+    _footer=Word(id=1, content=""), # Temporary footer
     _next_id=2 # Starting ID for content
 )
 
-doc.set_header(doc.create_string_object(content="My Header"))
-doc.set_footer(doc.create_string_object(content="Page 1"))
+doc.set_header(doc.create_word(content="My Header"))
+doc.set_footer(doc.create_word(content="Page 1"))
 
-doc.insert(doc.create_string_object(content="This is a "), 0)
-doc.insert(doc.create_string_object(content="sample", bold=True), 1)
-doc.insert(doc.create_string_object(content=" document."), 2)
+doc.insert(doc.create_word(content="This is a "), 0)
+doc.insert(doc.create_word(content="sample", bold=True), 1)
+doc.insert(doc.create_word(content=" document."), 2)
 
 # --- Request Models ---
 
 class DocumentRequest(BaseModel):
-    content: List[stringObject]
+    content: List[Word]
 
 class HeaderRequest(BaseModel):
-    header: stringObject
+    header: Word
 
 class FooterRequest(BaseModel):
-    footer: stringObject
+    footer: Word
 
 class FindRequest(BaseModel):
     search_term: str
 
 class InsertObjectRequest(BaseModel):
-    so: stringObject
+    so: Word
     index: int
 
 # --- Static files ---
@@ -56,7 +56,7 @@ def read_root():
 
 # --- Document level endpoints ---
 
-@app.get("/document", response_model=List[stringObject])
+@app.get("/document", response_model=List[Word])
 def get_document():
     print("Tool call: get_document")
     return doc.get_content()
@@ -70,7 +70,7 @@ def update_document(req: DocumentRequest):
     return {"message": "This endpoint is removed. Use insert/delete for updates."}
 
 
-@app.get("/header", response_model=stringObject)
+@app.get("/header", response_model=Word)
 def get_header():
     print("Tool call: get_header")
     return doc.get_header()
@@ -81,7 +81,7 @@ def update_header(req: HeaderRequest):
     doc.set_header(req.header)
     return {"message": "Header updated successfully."}
 
-@app.get("/footer", response_model=stringObject)
+@app.get("/footer", response_model=Word)
 def get_footer():
     print("Tool call: get_footer")
     return doc.get_footer()
@@ -103,9 +103,9 @@ def find_in_body(req: FindRequest):
 def insert_object(req: InsertObjectRequest):
     print(f"Tool call: insert_object at index {req.index} with content='{req.so.content}'")
     try:
-        # The stringObject from the request might not have an ID.
-        # The create_string_object method will assign a new ID if it's missing.
-        new_so = doc.create_string_object(**req.so.dict(exclude_unset=True))
+        # The Word from the request might not have an ID.
+        # The create_word method will assign a new ID if it's missing.
+        new_so = doc.create_word(**req.so.dict(exclude_unset=True))
         doc.insert(new_so, req.index)
         return {"message": "Object inserted."}
     except IndexError as e:
