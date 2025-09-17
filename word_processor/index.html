@@ -43,45 +43,28 @@
             flex-grow: 1;
             padding: 10px;
         }
-        #cli-container {
-            padding: 10px;
-        }
-        #cli-output {
-            height: 150px;
-            border: 1px solid #ccc;
-            overflow-y: scroll;
-            padding: 5px;
-            margin-bottom: 5px;
-        }
-        #cli-input {
-            width: 100%;
-        }
     </style>
 </head>
 <body>
     <h1>Word Editor</h1>
     <div class="container">
         <div class="panel">
-            <h2>HTML Source</h2>
+            <h2>Document File Structure</h2>
             <h3>Header</h3>
-            <textarea id="header-source"></textarea>
+            <textarea id="header-source" readonly></textarea>
             <h3>Body</h3>
-            <textarea id="html-source"></textarea>
+            <textarea id="html-source" readonly></textarea>
             <h3>Footer</h3>
-            <textarea id="footer-source"></textarea>
+            <textarea id="footer-source" readonly></textarea>
         </div>
         <div class="panel">
             <h2>Rendered Text</h2>
             <div id="page-preview">
                 <div id="header-preview"></div>
-                <div id="editor" contenteditable="true"></div>
+                <div id="editor"></div>
                 <div id="footer-preview"></div>
             </div>
         </div>
-    </div>
-    <div id="cli-container">
-        <div id="cli-output"></div>
-        <input id="cli-input" type="text" placeholder="Enter command...">
     </div>
 
     <script>
@@ -91,8 +74,6 @@
         const footerSource = document.getElementById('footer-source');
         const headerPreview = document.getElementById('header-preview');
         const footerPreview = document.getElementById('footer-preview');
-        const cliInput = document.getElementById('cli-input');
-        const cliOutput = document.getElementById('cli-output');
 
         function jsonToHtml(content) {
             if (!content) return "";
@@ -101,60 +82,19 @@
                     let text = item.content || '';
                     if (item.bold) text = `<b>${text}</b>`;
                     if (item.italic) text = `<i>${text}</i>`;
+                    if (item.lowerscript) text = `<sub>${text}</sub>`;
+                    if (item.superscript) text = `<sup>${text}</sup>`;
                     return text;
                 }).join('');
             } else if (typeof content === 'object' && content.content) {
                 let text = content.content;
                 if (content.bold) text = `<b>${text}</b>`;
                 if (content.italic) text = `<i>${text}</i>`;
+                if (content.lowerscript) text = `<sub>${text}</sub>`;
+                if (content.superscript) text = `<sup>${text}</sup>`;
                 return text;
             }
             return content; // Fallback for old string content
-        }
-
-        function parseNode(node) {
-            const result = [];
-            if (node.nodeType === Node.TEXT_NODE) {
-                if (node.textContent) {
-                    result.push({ content: node.textContent, bold: false, italic: false });
-                }
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                const isBold = node.tagName.toLowerCase() === 'b';
-                const isItalic = node.tagName.toLowerCase() === 'i';
-
-                for (const child of node.childNodes) {
-                    const childObjects = parseNode(child);
-                    for (const obj of childObjects) {
-                        if (isBold) obj.bold = true;
-                        if (isItalic) obj.italic = true;
-                        result.push(obj);
-                    }
-                }
-            }
-            return result;
-        }
-
-        function htmlToJson(element) {
-            const results = parseNode(element);
-            if (results.length < 2) return results;
-            
-            const merged = [results[0]];
-            for (let i = 1; i < results.length; i++) {
-                const prev = merged[merged.length - 1];
-                const curr = results[i];
-                if (prev.bold === curr.bold && prev.italic === curr.italic && prev.content) {
-                    prev.content += curr.content;
-                } else {
-                    merged.push(curr);
-                }
-            }
-            return merged;
-        }
-
-        function updateHtmlSource() {
-            const jsonContent = htmlToJson(editor);
-            htmlSource.value = JSON.stringify(jsonContent, null, 2);
-            // Removed PUT /document as per server.py
         }
 
         function updateEditor() {
@@ -162,19 +102,8 @@
                 const jsonContent = JSON.parse(htmlSource.value);
                 editor.innerHTML = jsonToHtml(jsonContent);
             } catch (e) {
-                // Handle cases where textarea has non-json html for manual editing
                 editor.innerHTML = htmlSource.value;
             }
-        }
-
-        function updateHeaderSource() {
-            const jsonContent = htmlToJson(headerPreview);
-            headerSource.value = JSON.stringify(jsonContent, null, 2);
-             fetch('/header', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ header: jsonContent[0] || {content: ""} })
-            });
         }
 
         function updateHeaderPreview() {
@@ -186,16 +115,6 @@
             }
         }
 
-        function updateFooterSource() {
-            const jsonContent = htmlToJson(footerPreview);
-            footerSource.value = JSON.stringify(jsonContent, null, 2);
-            fetch('/footer', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ footer: jsonContent[0] || {content: ""} })
-            });
-        }
-
         function updateFooterPreview() {
             try {
                 const jsonContent = JSON.parse(footerSource.value);
@@ -204,161 +123,6 @@
                 footerPreview.innerHTML = footerSource.value;
             }
         }
-
-        editor.addEventListener('input', updateHtmlSource);
-        htmlSource.addEventListener('input', updateEditor);
-        headerSource.addEventListener('input', updateHeaderPreview);
-        footerSource.addEventListener('input', updateFooterPreview);
-
-        headerPreview.contentEditable = true;
-        footerPreview.contentEditable = true;
-        headerPreview.addEventListener('input', updateHeaderSource);
-        footerPreview.addEventListener('input', updateFooterSource);
-
-
-        function appendOutput(text) {
-            const p = document.createElement('p');
-            p.textContent = text;
-            cliOutput.appendChild(p);
-            cliOutput.scrollTop = cliOutput.scrollHeight;
-        }
-
-        cliInput.addEventListener('keydown', async (e) => {
-            if (e.key === 'Enter') {
-                const command = cliInput.value;
-                cliInput.value = '';
-                appendOutput(`> ${command}`);
-                
-                const parts = command.split(' ');
-                const cmd = parts[0].toLowerCase();
-                
-                let response, data;
-
-                switch (cmd) {
-                    case 'bold':
-                    case 'italic':
-                        const soId = parseInt(parts[1]);
-                        if (isNaN(soId)) {
-                            appendOutput(`Usage: ${cmd} <so_id>`);
-                            break;
-                        }
-                        response = await fetch(`/format/${cmd}/${soId}`,
-                            {
-                                method: 'POST'
-                            });
-                        data = await response.json();
-                        // Re-fetch document to update editor after boldness change
-                        response = await fetch('/document');
-                        data = await response.json();
-                        htmlSource.value = JSON.stringify(data, null, 2);
-                        updateEditor();
-                        appendOutput(`${cmd} applied to object with id ${soId}.`);
-                        break;
-                    case 'find':
-                        const searchTerm = parts.slice(1).join(' ');
-                        response = await fetch('/document/find_in_body',
-                            {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ search_term: searchTerm })
-                            });
-                        data = await response.json();
-                        if (data.occurrences && data.occurrences.length > 0) {
-                            let output = 'Found at positions:';
-                            data.occurrences.forEach(occ => {
-                                output += ` [${occ[0]}-${occ[1]}]`;
-                            });
-                            appendOutput(output);
-                        } else {
-                            appendOutput('No occurrences found.');
-                        }
-                        break;
-                    case 'insert':
-                        const index = parseInt(parts[1]);
-                        if (isNaN(index)) {
-                            appendOutput('Usage: insert <index> <text>');
-                            break;
-                        }
-                        const textToInsert = parts.slice(2).join(' ');
-                        const stringObjectToInsert = { content: textToInsert, bold: false, italic: false };
-                        response = await fetch('/document/insert_object',
-                            {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ so: stringObjectToInsert, index: index })
-                            });
-                        await response.json();
-                        // Re-fetch document to update editor after insertion
-                        response = await fetch('/document');
-                        data = await response.json();
-                        htmlSource.value = JSON.stringify(data, null, 2);
-                        updateEditor();
-                        appendOutput(`Text inserted at index ${index}.`);
-                        break;
-                    case 'delete':
-                        const soIdToDelete = parseInt(parts[1]);
-                        if (isNaN(soIdToDelete)) {
-                            appendOutput('Usage: delete <so_id>');
-                            break;
-                        }
-                        response = await fetch(`/document/delete_object/${soIdToDelete}`,
-                            {
-                                method: 'DELETE'
-                            });
-                        await response.json();
-                        // Re-fetch document to update editor after deletion
-                        response = await fetch('/document');
-                        data = await response.json();
-                        htmlSource.value = JSON.stringify(data, null, 2);
-                        updateEditor();
-                        appendOutput(`Object with id ${soIdToDelete} deleted.`);
-                        break;
-                    case 'header':
-                        const headerText = parts.slice(1).join(' ');
-                        if (headerText) { // Set header
-                            const headerContent = { content: headerText, bold: false, italic: false };
-                            response = await fetch('/header', {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ header: headerContent })
-                            });
-                            await response.json();
-                            headerSource.value = JSON.stringify(headerContent, null, 2);
-                            updateHeaderPreview();
-                            appendOutput('Header updated.');
-                        } else { // Get header
-                            response = await fetch('/header');
-                            data = await response.json();
-                            appendOutput(`Header: ${jsonToHtml(data)}`);
-                        }
-                        break;
-                    case 'footer':
-                        const footerText = parts.slice(1).join(' ');
-                        if (footerText) { // Set footer
-                            const footerContent = { content: footerText, bold: false, italic: false };
-                            response = await fetch('/footer', {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ footer: footerContent })
-                            });
-                            await response.json();
-                            footerSource.value = JSON.stringify(footerContent, null, 2);
-                            updateFooterPreview();
-                            appendOutput('Footer updated.');
-                        } else { // Get footer
-                            response = await fetch('/footer');
-                            data = await response.json();
-                            appendOutput(`Footer: ${jsonToHtml(data)}`);
-                        }
-                        break;
-                    case 'help':
-                        appendOutput('Available commands: bold <so_id>, italic <so_id>, find <term>, insert <index> <text>, delete <so_id>, header [text], footer [text]');
-                        break;
-                    default:
-                        appendOutput(`Unknown command: ${cmd}. Type 'help' for a list of commands.`);
-                }
-            }
-        });
 
         // Load initial content
         window.onload = async () => {
@@ -376,8 +140,6 @@
             data = await response.json();
             footerSource.value = JSON.stringify(data, null, 2);
             updateFooterPreview();
-
-            appendOutput("Welcome to the editor CLI. Type 'help' for a list of commands.");
         };
     </script>
 </body>

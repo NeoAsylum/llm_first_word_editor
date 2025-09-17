@@ -1,12 +1,15 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Literal
 import html
 
 class Word(BaseModel):
+    type: Literal['word'] = 'word'
     id: Optional[int] = None
     content: str
     bold: bool = False
     italic: bool = False
+    lowerscript: bool = False
+    superscript: bool = False
 
     def find(self, text: str) -> List[int]:
         if not text:
@@ -28,4 +31,8 @@ class Word(BaseModel):
             text = f"<b>{text}</b>"
         if self.italic:
             text = f"<i>{text}</i>"
+        if self.lowerscript:
+            text = f"<sub>{text}</sub>"
+        if self.superscript:
+            text = f"<sup>{text}</sup>"
         return text

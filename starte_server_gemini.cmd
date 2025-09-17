@@ -1,7 +1,4 @@
 @echo off
-echo Starting client in a new window...
+echo Starting MCP Client and Server in new windows...
 start "MCP Client" cmd /k "c:\Users\adria\Downloads\mcp_server\starte_client_gemini.cmd"
-
-echo Starting server in this window...
-call .\.venv\Scripts\activate.bat
-python main.py
+start "MCP Server" cmd /k "call .\.venv\Scripts\activate.bat && python main.py"

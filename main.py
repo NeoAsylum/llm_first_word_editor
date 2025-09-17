@@ -1,26 +1,37 @@
 import json
 import urllib.request
 from fastmcp import FastMCP
-from typing import List, Dict, Any
+from typing import List, Optional, Literal
+from pydantic import BaseModel
 
 # Use a single FastMCP instance
 mcp = FastMCP(name="My MCP Server")
+
+# --- Pydantic Models ---
+class Word(BaseModel):
+    type: Literal['word'] = 'word'
+    id: Optional[int] = None
+    content: str
+    bold: bool = False
+    italic: bool = False
+    lowerscript: bool = False
+    superscript: bool = False
 
 # --- Editor Tools ---
 EDITOR_API_URL = "http://localhost:8001"
 
 @mcp.tool
-def get_document() -> str:
-    """Gets the current content of the document."""
+def get_document() -> List[Word]:
+    """Gets the current content of the document as a list of Word objects."""
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
             if response.status == 200:
-                data = json.loads(response.read().decode())
-                return data
+                content = json.loads(response.read().decode())
+                return content
             else:
-                return f"Error: Received status {response.status}"
+                return []
     except Exception as e:
-        return f"Error fetching document: {e}"
+        return []
 
 @mcp.tool
 def bold(so_id: int) -> str:
@@ -57,6 +68,40 @@ def italic(so_id: int) -> str:
         return f"Error applying italic: {e}"
 
 @mcp.tool
+def lowerscript(so_id: int) -> str:
+    """Applies lowerscript formatting to a Word by its ID."""
+    req = urllib.request.Request(
+        f"{EDITOR_API_URL}/format/lowerscript/{so_id}",
+        headers={'Content-Type': 'application/json'},
+        method='POST'
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 200:
+                return f"Lowerscript formatting applied to object {so_id}."
+            else:
+                return f"Error: Received status {response.status}"
+    except Exception as e:
+        return f"Error applying lowerscript: {e}"
+
+@mcp.tool
+def superscript(so_id: int) -> str:
+    """Applies superscript formatting to a Word by its ID."""
+    req = urllib.request.Request(
+        f"{EDITOR_API_URL}/format/superscript/{so_id}",
+        headers={'Content-Type': 'application/json'},
+        method='POST'
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 200:
+                return f"Superscript formatting applied to object {so_id}."
+            else:
+                return f"Error: Received status {response.status}"
+    except Exception as e:
+        return f"Error applying superscript: {e}"
+
+@mcp.tool
 def find(search_term: str) -> list[dict]: # Change return type hint
     """Finds all occurrences of a search term in the document body."""
     req = urllib.request.Request(
@@ -77,9 +122,9 @@ def find(search_term: str) -> list[dict]: # Change return type hint
         return {"error": f"Error finding text: {e}"}
 
 @mcp.tool
-def insert(so_content: str, index: int, bold: bool = False, italic: bool = False) -> str:
+def insert(so_content: str, index: int, bold: bool = False, italic: bool = False, lowerscript: bool = False, superscript: bool = False) -> str:
     """Inserts a new Word at a given index in the document content."""
-    new_word = {"content": so_content, "bold": bold, "italic": italic}
+    new_word = {"content": so_content, "bold": bold, "italic": italic, "lowerscript": lowerscript, "superscript": superscript, "type": "word"}
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/insert_object",
         data=json.dumps({"so": new_word, "index": index}).encode(),
@@ -113,22 +158,21 @@ def delete(so_id: int) -> str:
         return f"Error deleting object: {e}"
 
 @mcp.tool
-def get_header() -> str:
-    """Gets the current content of the header."""
+def get_header() -> List[Word]:
+    """Gets the current content of the header as HTML."""
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/header") as response:
             if response.status == 200:
-                data = json.loads(response.read().decode())
-                return [data] # Header is a single Word
+                return response.read().decode()
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
         return f"Error fetching header: {e}"
 
 @mcp.tool
-def set_header(content: str, bold: bool = False, italic: bool = False) -> str:
+def set_header(content: str, bold: bool = False, italic: bool = False, lowerscript: bool = False, superscript: bool = False) -> str:
     """Sets the content of the header."""
-    new_header_word = {"content": content, "bold": bold, "italic": italic}
+    new_header_word = {"content": content, "bold": bold, "italic": italic, "lowerscript": lowerscript, "superscript": superscript, "type": "word"}
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/header",
         data=json.dumps({"header": new_header_word}).encode(),
@@ -145,22 +189,21 @@ def set_header(content: str, bold: bool = False, italic: bool = False) -> str:
         return f"Error setting header: {e}"
 
 @mcp.tool
-def get_footer() -> str:
-    """Gets the current content of the footer."""
+def get_footer() -> List[Word]:
+    """Gets the current content of the footer as HTML."""
     try:
-        with urllib.request.urlopen(f"{EDITOR_API_URL}/footer") as response:
+        with urllib.request.urlopen(f"{EDITOR_API_URL}/footer/html") as response:
             if response.status == 200:
-                data = json.loads(response.read().decode())
-                return [data] # Footer is a single Word
+                return response.read().decode()
             else:
                 return f"Error: Received status {response.status}"
     except Exception as e:
         return f"Error fetching footer: {e}"
 
 @mcp.tool
-def set_footer(content: str, bold: bool = False, italic: bool = False) -> str:
+def set_footer(content: str, bold: bool = False, italic: bool = False, lowerscript: bool = False, superscript: bool = False) -> str:
     """Sets the content of the footer."""
-    new_footer_word = {"content": content, "bold": bold, "italic": italic}
+    new_footer_word = {"content": content, "bold": bold, "italic": italic, "lowerscript": lowerscript, "superscript": superscript, "type": "word"}
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/footer",
         data=json.dumps({"footer": new_footer_word}).encode(),

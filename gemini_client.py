@@ -6,13 +6,27 @@ from fastmcp import Client
 import json
 import sys
 from dotenv import load_dotenv
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 import logging
 from google.genai import types
 from google import genai
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(message)s',
+                    filename='logfile.txt',
+                    filemode='w')
+
+# Console handler to show only INFO and above
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# Use a simpler format for the console
+console_formatter = logging.Formatter('%(message)s')
+console.setFormatter(console_formatter)
+logging.getLogger('').addHandler(console)
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 class GeminiAgentClient:
     def __init__(self, server_url: str, gemini_model: str = "gemini-2.5-flash-lite"):
@@ -91,21 +105,24 @@ class GeminiAgentClient:
 
     async def _execute_tool(self, function_name: str, function_args: Dict[str, Any]) -> Any: # Change return type to Any
         """Executes a tool on the fastmcp server and returns its output."""
-        logging.info(f"Agent wants to execute tool: {function_name} with arguments: {function_args}")
+        logging.info(f"🤖 GEMINI: Wants to run tool '{function_name}' with arguments: {function_args}")
         
         try:
             tool_result_obj = await self.client.call_tool(function_name, function_args)
-            # If tool_result_obj.data is not None, return it directly.
-            # Otherwise, return an empty string or a default message.
+            logging.debug(f"🛠️ TOOL '{function_name}': Raw response from server:\n{tool_result_obj}")
+            
             if tool_result_obj.data is not None:
+                logging.debug(f"✅ TOOL '{function_name}': Returning structured data to Gemini:\n{json.dumps(tool_result_obj.data, indent=2)}")
                 return tool_result_obj.data
             elif tool_result_obj.content and isinstance(tool_result_obj.content, list):
-                return tool_result_obj.content[0].text # Still return text if it's specifically text content
+                logging.debug(f"✅ TOOL '{function_name}': Returning text content to Gemini:\n{tool_result_obj.content[0].text}")
+                return tool_result_obj.content[0].text
             else:
-                return "" # Return empty string if no meaningful data or content
+                logging.debug(f"⚠️ TOOL '{function_name}': No data or content found, returning empty string.")
+                return ""
         except Exception as e:
-            logging.error(f"Error executing tool {function_name}: {e}")
-            return f"Error: {e}" # Return error message as string
+            logging.error(f"❌ TOOL '{function_name}': Error executing tool: {e}")
+            return f"Error: {e}"
 
     async def run(self):
         """Runs the main interactive chat loop."""
@@ -123,7 +140,7 @@ class GeminiAgentClient:
                     
                     while True:
                         try:
-                            prompt = await asyncio.to_thread(input, "You: ")
+                            prompt = await asyncio.to_thread(input, "\nYou: ")
                             if prompt.lower() == 'exit':
                                 break
                             
