@@ -13,13 +13,8 @@ app = FastAPI()
 # Global document instance
 # Initializing with default values, then setting content using methods
 doc = Document(
-    _header=[],
-    _footer=[],
     _next_id=0,
 )
-
-doc.set_header([doc.create_word(content="My Header", id=0)])
-doc.set_footer([doc.create_word(content="Page 1", id=1)])
 
 doc.insert(doc.create_word(content="This is a ", id=2), 0)
 doc.insert(doc.create_word(content="sample", bold=True, id=3), 1)
@@ -30,14 +25,6 @@ doc.insert(doc.create_word(content=" document.", id=4), 2)
 
 class DocumentRequest(BaseModel):
     content: List[Word]
-
-
-class HeaderRequest(BaseModel):
-    header: List[Word]
-
-
-class FooterRequest(BaseModel):
-    footer: List[Word]
 
 
 class FindRequest(BaseModel):
@@ -78,61 +65,24 @@ def get_document_html():
     return doc.to_html()
 
 
-@app.get("/header/html", response_model=str)
-def get_header_html():
-    print("Tool call: get_header_html")
-    return "".join(so.to_html() for so in doc.get_header())
 
-
-@app.get("/header", response_model=List[Word])
-def get_header():
-    print("Tool call: get_header")
-    return doc.get_header()
-
-
-@app.put("/header")
-def update_header(req: HeaderRequest):
-    print("Tool call: update_header")
-    doc.set_header(req.header)
-    return {"message": "Header updated successfully."}
-
-
-@app.get("/footer", response_model=List[Word])
-def get_footer():
-    print("Tool call: get_footer")
-    return doc.get_footer()
-
-
-@app.get("/footer/html", response_model=str)
-def get_footer_html():
-    print("Tool call: get_footer_html")
-    return "".join(so.to_html() for so in doc.get_footer())
-
-
-@app.put("/footer")
-def update_footer(req: FooterRequest):
-    print("Tool call: update_footer")
-    doc.set_footer(req.footer)
-    return {"message": "Footer updated successfully."}
-
-
-@app.post("/document/find_in_body")
+@app.post("/document/find_in_body", response_model=list[dict])
 def find_in_body(req: FindRequest):
     print(f"Tool call: find_in_body with search_term='{req.search_term}'")
     return doc.find_in_body(req.search_term)
 
 
-@app.post("/document/insert_object")
-def insert_object(req: InsertObjectRequest):
+@app.post("/document/insert_object", response_model=str)
+def insert_object(req: InsertObjectRequest) -> str:
     print(
         f"Tool call: insert_object at index {req.index} with content='{req.so.content}'"
     )
     try:
         # The Word from the request might not have an ID.
         # The create_word method will assign a new ID if it's missing.
-        new_so = doc.create_word(**req.so.dict(exclude_unset=True))
+        new_so = doc.create_word(**req.so.model_dump(exclude_unset=True))
         doc.insert(new_so, req.index)
-        return {"message": "Object inserted."}
+        return "Object inserted."
     except IndexError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

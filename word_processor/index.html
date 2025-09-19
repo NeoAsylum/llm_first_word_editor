@@ -12,11 +12,8 @@
             padding: 10px;
             box-sizing: border-box;
         }
-        #html-source, #header-source, #footer-source {
+        #html-source {
             width: 100%;
-        }
-        #header-source, #footer-source {
-            height: 100px;
         }
         #html-source {
             height: 300px;
@@ -28,17 +25,7 @@
             display: flex;
             flex-direction: column;
         }
-        #header-preview, #footer-preview {
-            padding: 10px;
-            min-height: 50px;
-            background-color: #f0f0f0;
-        }
-        #header-preview {
-            border-bottom: 1px solid #ccc;
-        }
-        #footer-preview {
-            border-top: 1px solid #ccc;
-        }
+        
         #editor {
             flex-grow: 1;
             padding: 10px;
@@ -50,19 +37,15 @@
     <div class="container">
         <div class="panel">
             <h2>Document File Structure</h2>
-            <h3>Header</h3>
-            <textarea id="header-source" readonly></textarea>
+            
             <h3>Body</h3>
             <textarea id="html-source" readonly></textarea>
-            <h3>Footer</h3>
-            <textarea id="footer-source" readonly></textarea>
+            
         </div>
         <div class="panel">
             <h2>Rendered Text</h2>
             <div id="page-preview">
-                <div id="header-preview"></div>
                 <div id="editor"></div>
-                <div id="footer-preview"></div>
             </div>
         </div>
     </div>
@@ -70,10 +53,6 @@
     <script>
         const editor = document.getElementById('editor');
         const htmlSource = document.getElementById('html-source');
-        const headerSource = document.getElementById('header-source');
-        const footerSource = document.getElementById('footer-source');
-        const headerPreview = document.getElementById('header-preview');
-        const footerPreview = document.getElementById('footer-preview');
 
         function jsonToHtml(content) {
             if (!content) return "";
@@ -106,23 +85,7 @@
             }
         }
 
-        function updateHeaderPreview() {
-            try {
-                const jsonContent = JSON.parse(headerSource.value);
-                headerPreview.innerHTML = jsonToHtml(jsonContent);
-            } catch (e) {
-                headerPreview.innerHTML = headerSource.value;
-            }
-        }
-
-        function updateFooterPreview() {
-            try {
-                const jsonContent = JSON.parse(footerSource.value);
-                footerPreview.innerHTML = jsonToHtml(jsonContent);
-            } catch (e) {
-                footerPreview.innerHTML = footerSource.value;
-            }
-        }
+        
 
         // Load initial content
         window.onload = async () => {
@@ -130,16 +93,6 @@
             let data = await response.json();
             htmlSource.value = JSON.stringify(data, null, 2);
             updateEditor();
-
-            response = await fetch('/header');
-            data = await response.json();
-            headerSource.value = JSON.stringify(data, null, 2);
-            updateHeaderPreview();
-
-            response = await fetch('/footer');
-            data = await response.json();
-            footerSource.value = JSON.stringify(data, null, 2);
-            updateFooterPreview();
         };
     </script>
 </body>

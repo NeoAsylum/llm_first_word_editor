@@ -157,68 +157,7 @@ def delete(so_id: int) -> str:
     except Exception as e:
         return f"Error deleting object: {e}"
 
-@mcp.tool
-def get_header() -> List[Word]:
-    """Gets the current content of the header as HTML."""
-    try:
-        with urllib.request.urlopen(f"{EDITOR_API_URL}/header") as response:
-            if response.status == 200:
-                return response.read().decode()
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error fetching header: {e}"
 
-@mcp.tool
-def set_header(content: str, bold: bool = False, italic: bool = False, lowerscript: bool = False, superscript: bool = False) -> str:
-    """Sets the content of the header."""
-    new_header_word = {"content": content, "bold": bold, "italic": italic, "lowerscript": lowerscript, "superscript": superscript, "type": "word"}
-    req = urllib.request.Request(
-        f"{EDITOR_API_URL}/header",
-        data=json.dumps({"header": new_header_word}).encode(),
-        headers={'Content-Type': 'application/json'},
-        method='PUT'
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            if response.status == 200:
-                return "Header updated."
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error setting header: {e}"
-
-@mcp.tool
-def get_footer() -> List[Word]:
-    """Gets the current content of the footer as HTML."""
-    try:
-        with urllib.request.urlopen(f"{EDITOR_API_URL}/footer/html") as response:
-            if response.status == 200:
-                return response.read().decode()
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error fetching footer: {e}"
-
-@mcp.tool
-def set_footer(content: str, bold: bool = False, italic: bool = False, lowerscript: bool = False, superscript: bool = False) -> str:
-    """Sets the content of the footer."""
-    new_footer_word = {"content": content, "bold": bold, "italic": italic, "lowerscript": lowerscript, "superscript": superscript, "type": "word"}
-    req = urllib.request.Request(
-        f"{EDITOR_API_URL}/footer",
-        data=json.dumps({"footer": new_footer_word}).encode(),
-        headers={'Content-Type': 'application/json'},
-        method='PUT'
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            if response.status == 200:
-                return "Footer updated."
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error setting footer: {e}"
-
-
+    
 if __name__ == "__main__":
     mcp.run(transport="http", port=8000)

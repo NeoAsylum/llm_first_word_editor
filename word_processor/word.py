@@ -3,7 +3,6 @@ from typing import Optional, List, Literal
 import html
 
 class Word(BaseModel):
-    type: Literal['word'] = 'word'
     id: Optional[int] = None
     content: str
     bold: bool = False
