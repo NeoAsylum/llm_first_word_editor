@@ -1,19 +1,29 @@
+import json
+import os
 from typing import List
 from pydantic import BaseModel, ConfigDict
-from .word import Word
-import html
-from html.parser import HTMLParser
+from .paragraph import Paragraph
+from .enums import FormattingType
 
 class Document(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    _next_id: int = 0
-    _content: List[Word] = []
+    _content: List[Paragraph] = []
 
-    def create_word(self, **kwargs) -> Word:
-        if 'id' not in kwargs or kwargs['id'] is None:
-            kwargs['id'] = self._next_id
-            self._next_id += 1
-        return Word(**kwargs)
+    def create_word(self, **kwargs) -> Paragraph:
+        return Paragraph(**kwargs)
+
+    def save(self, filename: str, saves_dir: str):
+        os.makedirs(saves_dir, exist_ok=True)
+        file_path = os.path.join(saves_dir, filename)
+        with open(file_path, "w") as f:
+            json.dump([word.model_dump() for word in self._content], f, indent=4)
+
+    def load(self, filename: str, saves_dir: str):
+        file_path = os.path.join(saves_dir, filename)
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File '{filename}' not found in '{saves_dir}'")
+        with open(file_path, "r") as f:
+            loaded_content = json.load(f)
+            self._content = [Paragraph(**item) for item in loaded_content]
 
     def to_html(self) -> str:
         html_parts = []
@@ -25,71 +35,45 @@ class Document(BaseModel):
             
         return "\n".join(html_parts)
 
-    def find_in_body(self, text: str) -> List[dict]:
+    def find_in_body(self, text: str) -> List[dict[int, int]]:
         results = []
-        for so in self._content:
-            # The .find(), .id attributes are not part of the Word interface.
-            # This will fail if the Word is not a Word object.
+        for i, so in enumerate(self._content):
             indices = so.find(text)
             if indices:
                 results.append({
-                    "id": so.id,
-                    "indices": indices
+                    "paragraphId": i,
+                    "indexInParagraph": indices
                 })
         return results
 
-    def insert(self, so: Word, index: int):
+    def insert(self, so: Paragraph, index: int):
         if index < 0 or index > len(self._content):
             raise IndexError("Index out of range.")
         self._content.insert(index, so)
 
-    def delete(self, so_id: int):
-        so_to_delete = None
-        for so in self._content:
-            # The .id attribute is not part of the Word interface.
-            # This will fail if the Word is not a Word object.
-            if so.id == so_id:
-                so_to_delete = so
-                break
-        if so_to_delete:
-            self._content.remove(so_to_delete)
-        else:
-            raise ValueError(f"Word with id {so_id} not found.")
+    def delete(self, paragraph_index: int):
+        if paragraph_index < 0 or paragraph_index >= len(self._content):
+            raise IndexError("Paragraph index out of range.")
+        del self._content[paragraph_index]
 
-    def switchBoldness(self, so_id: int):
-        for so in self._content:
-            if so.id == so_id:
-                so.bold = not so.bold
-                return
-        raise ValueError(f"Word with id {so_id} not found.")
+    def switch_formatting(self, paragraph_index: int, formatting_type: FormattingType):
+        if paragraph_index < 0 or paragraph_index >= len(self._content):
+            raise IndexError("Paragraph index out of range.")
+        
+        so = self._content[paragraph_index]
+        if formatting_type == FormattingType.BOLD:
+            so.bold = not so.bold
+        elif formatting_type == FormattingType.ITALIC:
+            so.italic = not so.italic
+        elif formatting_type == FormattingType.LOWERSCRIPT:
+            so.lowerscript = not so.lowerscript
+            if so.lowerscript:
+                so.superscript = False
+        elif formatting_type == FormattingType.SUPERSCRIPT:
+            so.superscript = not so.superscript
+            if so.superscript:
+                so.lowerscript = False
 
-    def switchItalic(self, so_id: int):
-        for so in self._content:
-            if so.id == so_id:
-                so.italic = not so.italic
-                return
-        raise ValueError(f"Word with id {so_id} not found.")
-
-    def switchLowerscript(self, so_id: int):
-        for so in self._content:
-            if so.id == so_id:
-                so.lowerscript = not so.lowerscript
-                if so.lowerscript:
-                    so.superscript = False
-                return
-        raise ValueError(f"Word with id {so_id} not found.")
-
-    def switchSuperscript(self, so_id: int):
-        for so in self._content:
-            if so.id == so_id:
-                so.superscript = not so.superscript
-                if so.superscript:
-                    so.lowerscript = False
-                return
-        raise ValueError(f"Word with id {so_id} not found.")
-
-    def get_content(self) -> List[Word]:
+    def get_content(self) -> List[Paragraph]:
         return self._content
 
-    def get_next_id(self) -> int:
-        return self._next_id

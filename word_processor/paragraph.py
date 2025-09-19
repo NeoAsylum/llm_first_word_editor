@@ -1,9 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional, List, Literal
+from typing import Optional, List
 import html
 
-class Word(BaseModel):
-    id: Optional[int] = None
+class Paragraph(BaseModel):
     content: str
     bold: bool = False
     italic: bool = False

@@ -29,7 +29,7 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 class GeminiAgentClient:
-    def __init__(self, server_url: str, gemini_model: str = "gemini-2.5-flash-lite"):
+    def __init__(self, server_url: str, gemini_model: str = "gemini-2.5-flash"):
         self.server_url = server_url
         self.gemini_model = gemini_model
         self.client = Client(server_url)
@@ -43,10 +43,7 @@ class GeminiAgentClient:
             raise ValueError("GEMINI_API_KEY environment variable not set for Gemini API.")
         return genai.Client(api_key=api_key)
 
-    async def _chat_with_llm(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
-        logging.debug("--- Sending to Gemini ---")
-
-        # Convert messages to Gemini's Content format for generate_content
+    def _convert_messages_to_gemini_content(self, messages: List[Dict[str, Any]]) -> List[types.Content]:
         gemini_contents = []
         for msg in messages:
             if msg['role'] == 'user':
@@ -62,14 +59,19 @@ class GeminiAgentClient:
                 else:
                     gemini_contents.append(types.Content(role="model", parts=[types.Part(text=msg['content'])]))
             elif msg['role'] == 'tool':
-                # For tool responses, the role should be 'function' and content should be the tool output
-                # The previous message should contain the tool_calls
                 if messages and messages[-1]['role'] == 'assistant' and messages[-1].get('tool_calls'):
                     tool_name_for_response = messages[-1]['tool_calls'][0]['function']['name']
                     gemini_contents.append(types.Content(role="function", parts=[types.Part(function_response=types.FunctionResponse(name=tool_name_for_response, response=msg['content']))]))
                 else:
                     logging.warning("Tool output received without preceding assistant tool call.")
                     gemini_contents.append(types.Content(role="function", parts=[types.Part(text=msg['content'])]))
+        return gemini_contents
+
+    async def _chat_with_llm(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
+        logging.debug("--- Sending to Gemini ---")
+
+        # Convert messages to Gemini's Content format for generate_content
+        gemini_contents = self._convert_messages_to_gemini_content(messages)
 
         response = await self.gemini_client.aio.models.generate_content(
             model=self.gemini_model,
@@ -112,8 +114,8 @@ class GeminiAgentClient:
             logging.debug(f"🛠️ TOOL '{function_name}': Raw response from server:\n{tool_result_obj}")
             
             if tool_result_obj.data is not None:
-                logging.debug(f"✅ TOOL '{function_name}': Returning structured data to Gemini:\n{json.dumps(tool_result_obj.data, indent=2)}")
-                return tool_result_obj.data
+                logging.debug(f"✅ TOOL '{function_name}': Returning structured data to Gemini as JSON string:\n{json.dumps(tool_result_obj.data, indent=2)}")
+                return json.dumps(tool_result_obj.data)
             elif tool_result_obj.content and isinstance(tool_result_obj.content, list):
                 logging.debug(f"✅ TOOL '{function_name}': Returning text content to Gemini:\n{tool_result_obj.content[0].text}")
                 return tool_result_obj.content[0].text
@@ -173,6 +175,13 @@ class GeminiAgentClient:
                                     messages.append(response['message'])
 
                                 logging.info(f"Agent: {response['message']['content']}")
+                            except genai.errors.ServerError as e:
+                                logging.error(f"Error communicating with Gemini API: {e}", exc_info=True)
+                                logging.info("Agent: I encountered an error communicating with the Gemini API. This might be due to a very large input. Please try a shorter input or rephrase your request.")
+                                # Remove the last user message to allow retrying with a modified prompt
+                                if messages and messages[-1]['role'] == 'user':
+                                    messages.pop()
+                                continue # Continue the loop to allow the user to input a new prompt
                             except Exception as chat_e:
                                 logging.error(f"Error during chat interaction: {chat_e}", exc_info=True)
                                 # Optionally, re-raise or break the loop if the error is critical
@@ -198,7 +207,7 @@ if __name__ == "__main__":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     
     parser = argparse.ArgumentParser(description="Run the Gemini Agent Client.")
-    parser.add_argument("--gemini_model", type=str, default="gemini-2.5-flash-lite", help="Gemini model to use.")
+    parser.add_argument("--gemini_model", type=str, default="gemini-2.5-flash", help="Gemini model to use.")
     args = parser.parse_args()
 
     client_app = GeminiAgentClient(server_url="http://localhost:8000/mcp", 

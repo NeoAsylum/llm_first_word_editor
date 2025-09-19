@@ -1,163 +1,182 @@
 import json
 import urllib.request
 from fastmcp import FastMCP
-from typing import List, Optional, Literal
+from typing import List
 from pydantic import BaseModel
+from word_processor.enums import FormattingType
 
 # Use a single FastMCP instance
 mcp = FastMCP(name="My MCP Server")
 
+
 # --- Pydantic Models ---
-class Word(BaseModel):
-    type: Literal['word'] = 'word'
-    id: Optional[int] = None
+class Paragraph(BaseModel):
     content: str
     bold: bool = False
     italic: bool = False
     lowerscript: bool = False
     superscript: bool = False
 
+class FindResult(BaseModel):
+    paragraphId: int
+    indexInParagraph: List[int]
+
+class MessageResponse(BaseModel):
+    message: str
+
+
 # --- Editor Tools ---
 EDITOR_API_URL = "http://localhost:8001"
 
+
 @mcp.tool
-def get_document() -> List[Word]:
-    """Gets the current content of the document as a list of Word objects."""
+def get_document() -> List[Paragraph]:
+    """Gets the current content of the document as a list of Paragraph objects."""
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
             if response.status == 200:
-                content = json.loads(response.read().decode())
-                return content
+                content_data = json.loads(response.read().decode())
+                return content_data
             else:
                 return []
     except Exception as e:
+        print(f"Error in get_document: {e}")
         return []
 
+
 @mcp.tool
-def bold(so_id: int) -> str:
-    """Applies bold formatting to a Word by its ID."""
+def switch_formatting(paragraph_index: int, formatting_type: FormattingType) -> MessageResponse:
+    """Applies or removes formatting to a Paragraph by its index."""
     req = urllib.request.Request(
-        f"{EDITOR_API_URL}/format/bold/{so_id}",
-        headers={'Content-Type': 'application/json'},
-        method='POST'
+        f"{EDITOR_API_URL}/format/switch/{paragraph_index}/{formatting_type.value}",
+        headers={"Content-Type": "application/json"},
+        method="POST",
     )
     try:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
-                return f"Bold formatting applied to object {so_id}."
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
             else:
-                return f"Error: Received status {response.status}"
+                return MessageResponse(message=f"Error: Received status {response.status}")
     except Exception as e:
-        return f"Error applying bold: {e}"
+        return MessageResponse(message=f"Error applying formatting: {e}")
+
 
 @mcp.tool
-def italic(so_id: int) -> str:
-    """Applies italic formatting to a Word by its ID."""
-    req = urllib.request.Request(
-        f"{EDITOR_API_URL}/format/italic/{so_id}",
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            if response.status == 200:
-                return f"Italic formatting applied to object {so_id}."
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error applying italic: {e}"
-
-@mcp.tool
-def lowerscript(so_id: int) -> str:
-    """Applies lowerscript formatting to a Word by its ID."""
-    req = urllib.request.Request(
-        f"{EDITOR_API_URL}/format/lowerscript/{so_id}",
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            if response.status == 200:
-                return f"Lowerscript formatting applied to object {so_id}."
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error applying lowerscript: {e}"
-
-@mcp.tool
-def superscript(so_id: int) -> str:
-    """Applies superscript formatting to a Word by its ID."""
-    req = urllib.request.Request(
-        f"{EDITOR_API_URL}/format/superscript/{so_id}",
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            if response.status == 200:
-                return f"Superscript formatting applied to object {so_id}."
-            else:
-                return f"Error: Received status {response.status}"
-    except Exception as e:
-        return f"Error applying superscript: {e}"
-
-@mcp.tool
-def find(search_term: str) -> list[dict]: # Change return type hint
-    """Finds all occurrences of a search term in the document body."""
+def find(search_term: str) -> List[FindResult]:
+    """Finds all occurrences of a search term in the document body. Returns a list of IDs of words that contain this search term and the indexes at which it appears."""
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
         data=json.dumps({"search_term": search_term}).encode(),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
+        headers={"Content-Type": "application/json"},
+        method="POST",
     )
     try:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
-                data = json.loads(response.read().decode())
-                return data # Return the raw JSON data
+                response_data = json.loads(response.read().decode())
+                return [FindResult(**item) for item in response_data]
             else:
-                # Return an error structure that Gemini might understand
-                return {"error": f"Received status {response.status}"}
+                print(f"Error: Received status {response.status}")
+                return []
     except Exception as e:
-        return {"error": f"Error finding text: {e}"}
+        print(f"Error finding text: {e}")
+        return []
+
 
 @mcp.tool
-def insert(so_content: str, index: int, bold: bool = False, italic: bool = False, lowerscript: bool = False, superscript: bool = False) -> str:
-    """Inserts a new Word at a given index in the document content."""
-    new_word = {"content": so_content, "bold": bold, "italic": italic, "lowerscript": lowerscript, "superscript": superscript, "type": "word"}
+def insert(
+    so_content: str,
+    index: int,
+    bold: bool = False,
+    italic: bool = False,
+    lowerscript: bool = False,
+    superscript: bool = False,
+) -> MessageResponse:
+    """Inserts a new Paragraph at a given index in the document content."""
+    new_word = {
+        "content": so_content,
+        "bold": bold,
+        "italic": italic,
+        "lowerscript": lowerscript,
+        "superscript": superscript,
+    }
     req = urllib.request.Request(
-        f"{EDITOR_API_URL}/document/insert_object",
+        f"{EDITOR_API_URL}/document/insert_string",
         data=json.dumps({"so": new_word, "index": index}).encode(),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
+        headers={"Content-Type": "application/json"},
+        method="POST",
     )
     try:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
-                return "Object inserted."
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
             else:
-                return f"Error: Received status {response.status}"
+                return MessageResponse(message=f"Error: Received status {response.status}")
     except Exception as e:
-        return f"Error inserting object: {e}"
+        return MessageResponse(message=f"Error inserting object: {e}")
+
 
 @mcp.tool
-def delete(so_id: int) -> str:
-    """Deletes a Word by its ID from the document content."""
+def delete(paragraph_index: int) -> MessageResponse:
+    """Deletes a Paragraph by its index from the document content."""
     req = urllib.request.Request(
-        f"{EDITOR_API_URL}/document/delete_object/{so_id}",
-        headers={'Content-Type': 'application/json'},
-        method='DELETE'
+        f"{EDITOR_API_URL}/document/delete_paragraph/{paragraph_index}",
+        headers={"Content-Type": "application/json"},
+        method="DELETE",
     )
     try:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
-                return f"Object with ID {so_id} deleted."
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
             else:
-                return f"Error: Received status {response.status}"
+                return MessageResponse(message=f"Error: Received status {response.status}")
     except Exception as e:
-        return f"Error deleting object: {e}"
+        return MessageResponse(message=f"Error deleting object: {e}")
 
 
-    
+@mcp.tool
+def save_document(filename: str) -> MessageResponse:
+    """Saves the current document to a file."""
+    req = urllib.request.Request(
+        f"{EDITOR_API_URL}/document/save",
+        data=json.dumps({"filename": filename}).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 200:
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
+            else:
+                return MessageResponse(message=f"Error: Received status {response.status}")
+    except Exception as e:
+        return MessageResponse(message=f"Error saving document: {e}")
+
+
+@mcp.tool
+def load_document(filename: str) -> MessageResponse:
+    """Loads a document from a file."""
+    req = urllib.request.Request(
+        f"{EDITOR_API_URL}/document/load",
+        data=json.dumps({"filename": filename}).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 200:
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
+            else:
+                return MessageResponse(message=f"Error: Received status {response.status}")
+    except Exception as e:
+        return MessageResponse(message=f"Error loading document: {e}")
+
+
 if __name__ == "__main__":
     mcp.run(transport="http", port=8000)
