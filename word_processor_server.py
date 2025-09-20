@@ -1,9 +1,9 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 import uvicorn
 from typing import List, Union, Annotated
-
 import os
 
 from word_processor.document import Document
@@ -15,6 +15,8 @@ app = FastAPI()
 # Global document instance
 # Initializing with default values, then setting content using methods
 doc = Document()
+load_dotenv()
+SAVES_DIR = os.getenv("SAVES_DIR")
 
 doc.insert(doc.create_word(content="This is a "), 0)
 doc.insert(doc.create_word(content="sample", bold=True), 1)
@@ -109,7 +111,9 @@ def insert_object(req: InsertStringRequest) -> MessageResponse:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.delete("/document/delete_paragraph/{paragraph_index}", response_model=MessageResponse)
+@app.delete(
+    "/document/delete_paragraph/{paragraph_index}", response_model=MessageResponse
+)
 def delete_object(paragraph_index: int):
     print(f"Tool call: delete_object with index={paragraph_index}")
     try:
@@ -133,9 +137,6 @@ def switch_formatting(req: SwitchFormattingRequest):
         )
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
-
-
-SAVES_DIR = "saves"
 
 
 @app.post("/document/save", response_model=MessageResponse)
