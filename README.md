@@ -20,7 +20,7 @@ The project has a unique architecture that separates the document model, the ren
     -   "insert 'Hello World' at index 0"
     -   "make the first word bold"
     -   "save the document as my_document.txt"
-4.  **View the document:** Open the `word_processor/index.html` file in a web browser to see the live rendering of the document.
+4.  **View the document:** Open a web browser and navigate to `http://localhost:8001/` to see the live rendering of the document.
 
 ## Setup
 
