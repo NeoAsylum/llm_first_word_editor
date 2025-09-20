@@ -44,10 +44,17 @@ class LoadRequest(BaseModel):
     filename: str
 
 
+class SwitchFormattingRequest(BaseModel):
+    paragraph_index: int
+    index: int
+    length: int
+    formatting_type: FormattingType
+
+
 # --- Response Models ---
 class FindResult(BaseModel):
-    paragraphId: int
-    indexInParagraph: List[int]
+    length: int
+    locations: List[tuple[int, int]]
 
 
 class MessageResponse(BaseModel):
@@ -83,7 +90,7 @@ def get_document_html():
     return doc.to_html()
 
 
-@app.post("/document/find_in_body", response_model=List[FindResult])
+@app.post("/document/find_in_body", response_model=FindResult)
 def find_in_body(req: FindRequest):
     print(f"Tool call: find_in_body with search_term='{req.search_term}'")
     return doc.find_in_body(req.search_term)
@@ -112,15 +119,18 @@ def delete_object(paragraph_index: int):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@app.post("/format/switch/{paragraph_index}/{formatting_type}", response_model=MessageResponse)
-def switch_formatting(
-    paragraph_index: int,
-    formatting_type: FormattingType
-):
-    print(f"Tool call: switch_formatting for index={paragraph_index}, type={formatting_type.value}")
+@app.post("/format/switch", response_model=MessageResponse)
+def switch_formatting(req: SwitchFormattingRequest):
+    print(
+        f"Tool call: switch_formatting for paragraph_index={req.paragraph_index}, index={req.index}, length={req.length}, type={req.formatting_type.value}"
+    )
     try:
-        doc.switch_formatting(paragraph_index, formatting_type)
-        return MessageResponse(message=f"Formatting {formatting_type.value} switched for object at index {paragraph_index}.")
+        doc.switch_formatting(
+            req.paragraph_index, req.index, req.length, req.formatting_type
+        )
+        return MessageResponse(
+            message=f"Formatting {req.formatting_type.value} switched for object at index {req.paragraph_index}."
+        )
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

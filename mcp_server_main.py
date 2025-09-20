@@ -1,7 +1,7 @@
 import json
 import urllib.request
 from fastmcp import FastMCP
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from word_processor.enums import FormattingType
 
@@ -17,9 +17,11 @@ class Paragraph(BaseModel):
     lowerscript: bool = False
     superscript: bool = False
 
+
 class FindResult(BaseModel):
-    paragraphId: int
-    indexInParagraph: List[int]
+    length: int
+    locations: List[tuple[int, int]]
+
 
 class MessageResponse(BaseModel):
     message: str
@@ -31,7 +33,7 @@ EDITOR_API_URL = "http://localhost:8001"
 
 @mcp.tool
 def get_document() -> List[Paragraph]:
-    """Gets the current content of the document as a list of Paragraph objects."""
+    """Gets the current content of the document as a list of Paragraph objects.  A new "paragraph" begins whenever the formatting changes"""
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
             if response.status == 200:
@@ -45,10 +47,22 @@ def get_document() -> List[Paragraph]:
 
 
 @mcp.tool
-def switch_formatting(paragraph_index: int, formatting_type: FormattingType) -> MessageResponse:
-    """Applies or removes formatting to a Paragraph by its index."""
+def switch_formatting(
+    paragraph_index: int,
+    index: int,
+    length: int,
+    formatting_type: FormattingType,
+) -> MessageResponse:
+    """Applies or removes formatting to a substring of a Paragraph."""
+    data = {
+        "paragraph_index": paragraph_index,
+        "index": index,
+        "length": length,
+        "formatting_type": formatting_type.value,
+    }
     req = urllib.request.Request(
-        f"{EDITOR_API_URL}/format/switch/{paragraph_index}/{formatting_type.value}",
+        f"{EDITOR_API_URL}/format/switch",
+        data=json.dumps(data).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
@@ -58,14 +72,16 @@ def switch_formatting(paragraph_index: int, formatting_type: FormattingType) -> 
                 response_data = json.loads(response.read().decode())
                 return MessageResponse(**response_data)
             else:
-                return MessageResponse(message=f"Error: Received status {response.status}")
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
     except Exception as e:
         return MessageResponse(message=f"Error applying formatting: {e}")
 
 
 @mcp.tool
-def find(search_term: str) -> List[FindResult]:
-    """Finds all occurrences of a search term in the document body. Returns a list of IDs of words that contain this search term and the indexes at which it appears."""
+def find(search_term: str) -> Optional[FindResult]:
+    """Finds all occurrences of a search term in the document body. Returns an object with the length of the search term and a list of locations (paragraph_index, index_in_paragraph)."""
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
         data=json.dumps({"search_term": search_term}).encode(),
@@ -76,13 +92,13 @@ def find(search_term: str) -> List[FindResult]:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return [FindResult(**item) for item in response_data]
+                return FindResult(**response_data)
             else:
                 print(f"Error: Received status {response.status}")
-                return []
+                return None
     except Exception as e:
         print(f"Error finding text: {e}")
-        return []
+        return None
 
 
 @mcp.tool
@@ -114,7 +130,9 @@ def insert(
                 response_data = json.loads(response.read().decode())
                 return MessageResponse(**response_data)
             else:
-                return MessageResponse(message=f"Error: Received status {response.status}")
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
     except Exception as e:
         return MessageResponse(message=f"Error inserting object: {e}")
 
@@ -133,7 +151,9 @@ def delete(paragraph_index: int) -> MessageResponse:
                 response_data = json.loads(response.read().decode())
                 return MessageResponse(**response_data)
             else:
-                return MessageResponse(message=f"Error: Received status {response.status}")
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
     except Exception as e:
         return MessageResponse(message=f"Error deleting object: {e}")
 
@@ -153,7 +173,9 @@ def save_document(filename: str) -> MessageResponse:
                 response_data = json.loads(response.read().decode())
                 return MessageResponse(**response_data)
             else:
-                return MessageResponse(message=f"Error: Received status {response.status}")
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
     except Exception as e:
         return MessageResponse(message=f"Error saving document: {e}")
 
@@ -173,7 +195,9 @@ def load_document(filename: str) -> MessageResponse:
                 response_data = json.loads(response.read().decode())
                 return MessageResponse(**response_data)
             else:
-                return MessageResponse(message=f"Error: Received status {response.status}")
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
     except Exception as e:
         return MessageResponse(message=f"Error loading document: {e}")
 

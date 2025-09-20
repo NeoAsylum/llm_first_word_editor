@@ -34,3 +34,14 @@ class Paragraph(BaseModel):
         if self.superscript:
             text = f"<sup>{text}</sup>"
         return text
+
+    def can_merge_with(self, other: "Paragraph") -> bool:
+        return (
+            self.bold == other.bold and
+            self.italic == other.italic and
+            self.lowerscript == other.lowerscript and
+            self.superscript == other.superscript
+        )
+
+    def merge(self, other: "Paragraph"):
+        self.content += other.content
