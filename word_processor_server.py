@@ -1,9 +1,9 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 import uvicorn
-from typing import List, Union, Annotated
+from typing import List
 import os
 
 from word_processor.document import Document
@@ -18,12 +18,12 @@ doc = Document()
 load_dotenv()
 SAVES_DIR = os.getenv("SAVES_DIR")
 
-doc.insert(doc.create_word(content="This is a "), 0)
-doc.insert(doc.create_word(content="sample", bold=True), 1)
-doc.insert(doc.create_word(content=" document."), 2)
+doc.insert("This is a ", 0, 0)
+doc.insert("sample ", 0, 11)
+doc.insert("document. \n And i am trying out some stuff right here. ", 0, 18)
+doc.switch_formatting(0, 10, 7, FormattingType.BOLD)
 
 # --- Request Models ---
-
 
 class DocumentRequest(BaseModel):
     content: List[Paragraph]
@@ -34,8 +34,9 @@ class FindRequest(BaseModel):
 
 
 class InsertStringRequest(BaseModel):
-    so: Paragraph
-    index: int
+    text: str
+    paragraph_index: int
+    string_index: int
 
 
 class SaveRequest(BaseModel):
@@ -100,15 +101,14 @@ def find_in_body(req: FindRequest):
 
 @app.post("/document/insert_string", response_model=MessageResponse)
 def insert_object(req: InsertStringRequest) -> MessageResponse:
-    print(
-        f"Tool call: insert_object at index {req.index} with content='{req.so.content}'"
-    )
     try:
-        new_so = doc.create_word(**req.so.model_dump(exclude_unset=True))
-        doc.insert(new_so, req.index)
-        return MessageResponse(message="Object inserted.")
+        doc.insert(req.text, req.paragraph_index, req.string_index)
+        return MessageResponse(
+            message=f"Text inserted at paragraph {req.paragraph_index}, index {req.string_index}."
+        )
     except IndexError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
+
 
 
 @app.delete(

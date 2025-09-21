@@ -8,8 +8,10 @@ from .enums import FormattingType
 
 class Document(BaseModel):
     _content: List[Paragraph] = []
+    _content.append(Paragraph(content=""))
 
-    def create_word(self, **kwargs) -> Paragraph:
+
+    def create_paragraph(self, **kwargs) -> Paragraph:
         self.join_paragraphs()
         return Paragraph(**kwargs)
 
@@ -40,6 +42,12 @@ class Document(BaseModel):
 
         return "\n".join(html_parts)
 
+    def insert(self, text: str, paragraph_index: int, string_index: int) -> str:
+        if self._content.__len__() == 0:
+            self._content.append(Paragraph(content=""))
+        self._content[paragraph_index].insert(text, string_index)
+        self.join_paragraphs()
+
     def find_in_body(self, text: str) -> dict:
         locations = []
         text_length = len(text)
@@ -51,12 +59,6 @@ class Document(BaseModel):
                 locations.append((i, index))
         self.join_paragraphs()
         return {"length": text_length, "locations": locations}
-
-    def insert(self, so: Paragraph, index: int):
-        if index < 0 or index > len(self._content):
-            raise IndexError("Index out of range.")
-        self._content.insert(index, so)
-        self.join_paragraphs()
 
     def delete(self, paragraph_index: int):
         if paragraph_index < 0 or paragraph_index >= len(self._content):

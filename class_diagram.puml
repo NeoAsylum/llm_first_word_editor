@@ -1,0 +1,100 @@
+@startuml
+' skinparam linetype ortho
+
+package "Gemini Client" {
+  class GeminiAgentClient {
+    - server_url: str
+    - gemini_model: str
+    - client: Client
+    - gemini_client: genai.Client
+    + _initialize_gemini_client()
+    + _convert_messages_to_gemini_content()
+    + _chat_with_llm()
+    + _execute_tool()
+    + run()
+  }
+}
+
+package "MCP Server" {
+  class FastMCP {
+    + tool()
+    + run()
+  }
+
+  class "mcp_server_main" as mcp_server_main {
+    + get_document(): List[Paragraph]
+    + insert_string(): MessageResponse
+    + switch_formatting(): MessageResponse
+    + find(): FindResult
+    + delete(): MessageResponse
+    + save_document(): MessageResponse
+    + load_document(): MessageResponse
+  }
+}
+
+package "Word Processor Server" {
+    class FastAPI {
+    }
+    class "word_processor_server" as word_processor_server {
+        - doc: Document
+        + get_document(): List[Paragraph]
+        + get_document_html(): str
+        + find_in_body(): FindResult
+        + insert_object(): MessageResponse
+        + delete_object(): MessageResponse
+        + switch_formatting(): MessageResponse
+        + save_document(): MessageResponse
+        + load_document(): MessageResponse
+    }
+}
+
+package "Word Processor Core" {
+  class Document {
+    - _content: List[Paragraph]
+    + create_paragraph(): Paragraph
+    + save()
+    + load()
+    + to_html(): str
+    + insert()
+    + find_in_body(): dict
+    + delete()
+    + switch_formatting()
+    + get_content(): List[Paragraph]
+    + join_paragraphs()
+  }
+
+  class Paragraph {
+    + content: str
+    + bold: bool
+    + italic: bool
+    + lowerscript: bool
+    + superscript: bool
+    + insert()
+    + find(): List[int]
+    + to_html(): str
+    + can_merge_with(): bool
+    + merge()
+  }
+
+  enum FormattingType {
+      BOLD
+      ITALIC
+      SUPERSCRIPT
+      LOWERSCRIPT
+  }
+}
+
+' Relationships
+GeminiAgentClient --> mcp_server_main : "uses tools via HTTP"
+mcp_server_main --> word_processor_server : "forwards requests via HTTP"
+word_processor_server --> Document : "uses"
+Document "1" *-- "many" Paragraph : "contains"
+word_processor_server ..> FormattingType
+Document ..> FormattingType
+mcp_server_main ..> FormattingType
+
+mcp_server_main ..> FastMCP : "uses"
+word_processor_server ..> FastAPI : "uses"
+
+
+@enduml

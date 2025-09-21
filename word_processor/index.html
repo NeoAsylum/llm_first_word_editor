@@ -54,45 +54,21 @@
         const editor = document.getElementById('editor');
         const htmlSource = document.getElementById('html-source');
 
-        function jsonToHtml(content) {
-            if (!content) return "";
-            if (Array.isArray(content)) {
-                return content.map(item => {
-                    let text = item.content || '';
-                    if (item.bold) text = `<b>${text}</b>`;
-                    if (item.italic) text = `<i>${text}</i>`;
-                    if (item.lowerscript) text = `<sub>${text}</sub>`;
-                    if (item.superscript) text = `<sup>${text}</sup>`;
-                    return text;
-                }).join('');
-            } else if (typeof content === 'object' && content.content) {
-                let text = content.content;
-                if (content.bold) text = `<b>${text}</b>`;
-                if (content.italic) text = `<i>${text}</i>`;
-                if (content.lowerscript) text = `<sub>${text}</sub>`;
-                if (content.superscript) text = `<sup>${text}</sup>`;
-                return text;
-            }
-            return content; // Fallback for old string content
-        }
-
-        function updateEditor() {
-            try {
-                const jsonContent = JSON.parse(htmlSource.value);
-                editor.innerHTML = jsonToHtml(jsonContent);
-            } catch (e) {
-                editor.innerHTML = htmlSource.value;
-            }
-        }
-
-        
-
         // Load initial content
         window.onload = async () => {
-            let response = await fetch('/document');
-            let data = await response.json();
-            htmlSource.value = JSON.stringify(data, null, 2);
-            updateEditor();
+            // Fetch both JSON and HTML content concurrently
+            const [jsonResponse, htmlResponse] = await Promise.all([
+                fetch('/document'),
+                fetch('/document/html')
+            ]);
+
+            // Parse the responses
+            const jsonData = await jsonResponse.json();
+            const htmlData = await htmlResponse.text();
+
+            // Populate the elements
+            htmlSource.value = JSON.stringify(jsonData, null, 2);
+            editor.innerHTML = htmlData;
         };
     </script>
 </body>

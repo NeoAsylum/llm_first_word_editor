@@ -33,7 +33,12 @@ EDITOR_API_URL = "http://localhost:8001"
 
 @mcp.tool
 def get_document() -> List[Paragraph]:
-    """Gets the current content of the document as a list of Paragraph objects.  A new "paragraph" begins whenever the formatting changes"""
+    """
+    Retrieves the entire document's content. The document is represented as a list of 'Paragraph' objects.
+    Each 'Paragraph' object has a 'content' (the text) and formatting properties (bold, italic, etc.).
+    A new 'Paragraph' object is created whenever the text formatting changes.
+    This allows for a structured representation of the document's content and styling.
+    """
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
             if response.status == 200:
@@ -47,13 +52,65 @@ def get_document() -> List[Paragraph]:
 
 
 @mcp.tool
+def insert_string(
+    text: str,
+    paragraph_index: int,
+    string_index: int,
+) -> MessageResponse:
+    """
+    Inserts a string of text into a specific paragraph at a given index.
+
+    To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' tool to get the precise paragraph_index and string_index for the desired insertion point.
+    Incorrect indices may lead to unexpected behavior or errors.
+
+    Args:
+        text: The string of text to insert.
+        paragraph_index: The index of the paragraph to insert the text into.
+        string_index: The character index within the paragraph's content where the text should be inserted.
+    """
+    data = {
+        "text": text,
+        "paragraph_index": paragraph_index,
+        "string_index": string_index,
+    }
+    req = urllib.request.Request(
+        f"{EDITOR_API_URL}/document/insert_string",
+        data=json.dumps(data).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 200:
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
+            else:
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
+    except Exception as e:
+        return MessageResponse(message=f"Error inserting string: {e}")
+
+
+@mcp.tool
 def switch_formatting(
     paragraph_index: int,
     index: int,
     length: int,
     formatting_type: FormattingType,
 ) -> MessageResponse:
-    """Applies or removes formatting to a substring of a Paragraph."""
+    """
+    Toggles a specific formatting style (e.g., bold, italic) on a segment of text within a paragraph.
+
+    This function will apply the specified formatting if it's not present, or remove it if it is already applied.
+    For example, if the text is already bold and you call this with 'BOLD', it will become not bold.
+
+    Args:
+        paragraph_index: The index of the paragraph to modify.
+        index: The starting character index of the text segment to format.
+        length: The number of characters in the text segment to format.
+        formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT'.
+    """
     data = {
         "paragraph_index": paragraph_index,
         "index": index,
@@ -81,7 +138,19 @@ def switch_formatting(
 
 @mcp.tool
 def find(search_term: str) -> Optional[FindResult]:
-    """Finds all occurrences of a search term in the document body. Returns an object with the length of the search term and a list of locations (paragraph_index, index_in_paragraph)."""
+    """
+    Searches the entire document for a given search term.
+
+    Returns a 'FindResult' object which contains:
+    - 'length': The character length of the search_term.
+    - 'locations': A list of tuples, where each tuple contains the 'paragraph_index' and 'index_in_paragraph' of a match.
+
+    This tool is very useful for finding the exact coordinates to use with other tools like 'insert_string' or 'switch_formatting'.
+    It is recommended to use 'get_document' first to have an idea of the document's content.
+
+    Args:
+        search_term: The text to search for in the document.
+    """
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
         data=json.dumps({"search_term": search_term}).encode(),
@@ -102,44 +171,16 @@ def find(search_term: str) -> Optional[FindResult]:
 
 
 @mcp.tool
-def insert(
-    so_content: str,
-    index: int,
-    bold: bool = False,
-    italic: bool = False,
-    lowerscript: bool = False,
-    superscript: bool = False,
-) -> MessageResponse:
-    """Inserts a new Paragraph at a given index in the document content."""
-    new_word = {
-        "content": so_content,
-        "bold": bold,
-        "italic": italic,
-        "lowerscript": lowerscript,
-        "superscript": superscript,
-    }
-    req = urllib.request.Request(
-        f"{EDITOR_API_URL}/document/insert_string",
-        data=json.dumps({"so": new_word, "index": index}).encode(),
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            if response.status == 200:
-                response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
-            else:
-                return MessageResponse(
-                    message=f"Error: Received status {response.status}"
-                )
-    except Exception as e:
-        return MessageResponse(message=f"Error inserting object: {e}")
-
-
-@mcp.tool
 def delete(paragraph_index: int) -> MessageResponse:
-    """Deletes a Paragraph by its index from the document content."""
+    """
+    Deletes a paragraph from the document based on its index.
+
+    The document is a list of paragraphs, and this function removes one of them.
+    Use 'get_document' to see the list of paragraphs and their indices.
+
+    Args:
+        paragraph_index: The index of the paragraph to delete.
+    """
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/delete_paragraph/{paragraph_index}",
         headers={"Content-Type": "application/json"},
@@ -160,7 +201,15 @@ def delete(paragraph_index: int) -> MessageResponse:
 
 @mcp.tool
 def save_document(filename: str) -> MessageResponse:
-    """Saves the current document to a file."""
+    """
+    Saves the current state of the document to a file.
+
+    The file will be saved in a pre-configured 'saves' directory.
+    You only need to provide the filename, not the full path.
+
+    Args:
+        filename: The name of the file to save the document as (e.g., 'my_document.txt').
+    """
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/save",
         data=json.dumps({"filename": filename}).encode(),
@@ -182,7 +231,15 @@ def save_document(filename: str) -> MessageResponse:
 
 @mcp.tool
 def load_document(filename: str) -> MessageResponse:
-    """Loads a document from a file."""
+    """
+    Loads a document from a file, replacing the current document content.
+
+    The file will be loaded from a pre-configured 'saves' directory.
+    You only need to provide the filename, not the full path.
+
+    Args:
+        filename: The name of the file to load the document from (e.g., 'my_document.txt').
+    """
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/load",
         data=json.dumps({"filename": filename}).encode(),

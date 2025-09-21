@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional, List
 import html
+import re
+import logging
+
+logging.basicConfig(filename='paragraph_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
 
 class Paragraph(BaseModel):
     content: str
@@ -9,10 +13,13 @@ class Paragraph(BaseModel):
     lowerscript: bool = False
     superscript: bool = False
 
+    def insert(self, text: str, index: int):
+        self.content = self.content[:index] + text + self.content[index:]
+
     def find(self, text: str) -> List[int]:
         if not text:
             return []
-        
+
         indices = []
         start_index = 0
         while True:
@@ -24,7 +31,9 @@ class Paragraph(BaseModel):
         return indices
 
     def to_html(self) -> str:
+        logging.info(f"Processing content: {self.content}")
         text = html.escape(self.content)
+        text = re.sub(r'\n+', '<br>', text)
         if self.bold:
             text = f"<b>{text}</b>"
         if self.italic:
@@ -37,10 +46,10 @@ class Paragraph(BaseModel):
 
     def can_merge_with(self, other: "Paragraph") -> bool:
         return (
-            self.bold == other.bold and
-            self.italic == other.italic and
-            self.lowerscript == other.lowerscript and
-            self.superscript == other.superscript
+            self.bold == other.bold
+            and self.italic == other.italic
+            and self.lowerscript == other.lowerscript
+            and self.superscript == other.superscript
         )
 
     def merge(self, other: "Paragraph"):
