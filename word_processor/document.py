@@ -3,13 +3,16 @@ import os
 from typing import List
 from pydantic import BaseModel, ConfigDict
 from .paragraph import Paragraph
-from .enums import FormattingType
+from .enums import FormattingType, MarginType
 
 
 class Document(BaseModel):
+    margin_left: float = 2.5
+    margin_right: float = 2.5
+    margin_top: float = 2.5
+    margin_bottom: float = 2.5
     _content: List[Paragraph] = []
     _content.append(Paragraph(content=""))
-
 
     def create_paragraph(self, **kwargs) -> Paragraph:
         self.join_paragraphs()
@@ -36,7 +39,8 @@ class Document(BaseModel):
 
         if self._content:
             main_content = "".join(so.to_html() for so in self._content)
-            html_parts.append(f"<main>{main_content}</main>")
+            style = f"padding-top: {self.margin_top}cm; padding-bottom: {self.margin_bottom}cm; padding-left: {self.margin_left}cm; padding-right: {self.margin_right}cm;"
+            html_parts.append(f'<main style="{style}">{main_content}</main>')
 
         self.join_paragraphs()
 
@@ -60,10 +64,10 @@ class Document(BaseModel):
         self.join_paragraphs()
         return {"length": text_length, "locations": locations}
 
-    def delete(self, paragraph_index: int):
+    def delete(self, paragraph_index: int, string_index: int, length: int):
         if paragraph_index < 0 or paragraph_index >= len(self._content):
             raise IndexError("Paragraph index out of range.")
-        del self._content[paragraph_index]
+        self._content[paragraph_index].delete(string_index, length)
         self.join_paragraphs()
 
     def switch_formatting(
@@ -148,3 +152,14 @@ class Document(BaseModel):
                 del self._content[i]
 
             i -= 1
+
+    def set_margin(self, margin_type: MarginType, value_mm: int):
+        value_cm = value_mm / 10.0
+        if margin_type == MarginType.LEFT:
+            self.margin_left = value_cm
+        elif margin_type == MarginType.RIGHT:
+            self.margin_right = value_cm
+        elif margin_type == MarginType.TOP:
+            self.margin_top = value_cm
+        elif margin_type == MarginType.BOTTOM:
+            self.margin_bottom = value_cm

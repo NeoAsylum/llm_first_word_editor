@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 import uvicorn
 from typing import List
@@ -8,7 +8,7 @@ import os
 
 from word_processor.document import Document
 from word_processor.paragraph import Paragraph
-from word_processor.enums import FormattingType
+from word_processor.enums import FormattingType, MarginType
 
 app = FastAPI()
 
@@ -53,6 +53,15 @@ class SwitchFormattingRequest(BaseModel):
     length: int
     formatting_type: FormattingType
 
+class SetMarginRequest(BaseModel):
+    margin_type: MarginType
+    value_mm: int
+
+class DeleteRequest(BaseModel):
+    paragraph_index: int
+    string_index: int
+    length: int
+
 
 # --- Response Models ---
 class FindResult(BaseModel):
@@ -68,8 +77,9 @@ class MessageResponse(BaseModel):
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 index_html_path = os.path.join(
-    script_dir, "word_processor/index.html"
-)  # this is the correct file path. dont edit.
+    script_dir,
+    "word_processor/index.html",  # this is the correct file path. dont edit.
+)
 
 
 @app.get("/")
@@ -87,7 +97,7 @@ def get_document():
     return doc.get_content()
 
 
-@app.get("/document/html", response_model=str)
+@app.get("/document/html", response_class=HTMLResponse)
 def get_document_html():
     print("Tool call: get_document_html")
     return doc.to_html()
@@ -111,14 +121,11 @@ def insert_object(req: InsertStringRequest) -> MessageResponse:
 
 
 
-@app.delete(
-    "/document/delete_paragraph/{paragraph_index}", response_model=MessageResponse
-)
-def delete_object(paragraph_index: int):
-    print(f"Tool call: delete_object with index={paragraph_index}")
+@app.post("/document/delete_substring", response_model=MessageResponse)
+def delete_substring(req: DeleteRequest):
     try:
-        doc.delete(paragraph_index)
-        return MessageResponse(message=f"Object at index {paragraph_index} deleted.")
+        doc.delete(req.paragraph_index, req.string_index, req.length)
+        return MessageResponse(message="Substring deleted.")
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -157,6 +164,14 @@ def load_document(req: LoadRequest):
         return MessageResponse(message=f"Document loaded from {req.filename}.")
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/document/set_margin", response_model=MessageResponse)
+def set_margin(req: SetMarginRequest):
+    try:
+        doc.set_margin(req.margin_type, req.value_mm)
+        return MessageResponse(message=f"Margin {req.margin_type.value} set to {req.value_mm}mm.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

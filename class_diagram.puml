@@ -33,19 +33,19 @@ package "MCP Server" {
 }
 
 package "Word Processor Server" {
-    class FastAPI {
-    }
-    class "word_processor_server" as word_processor_server {
-        - doc: Document
-        + get_document(): List[Paragraph]
-        + get_document_html(): str
-        + find_in_body(): FindResult
-        + insert_object(): MessageResponse
-        + delete_object(): MessageResponse
-        + switch_formatting(): MessageResponse
-        + save_document(): MessageResponse
-        + load_document(): MessageResponse
-    }
+  class FastAPI {
+  }
+  class "word_processor_server" as word_processor_server {
+    - doc: Document
+    + get_document(): List[Paragraph]
+    + get_document_html(): str
+    + find_in_body(): FindResult
+    + insert_object(): MessageResponse
+    + delete_object(): MessageResponse
+    + switch_formatting(): MessageResponse
+    + save_document(): MessageResponse
+    + load_document(): MessageResponse
+  }
 }
 
 package "Word Processor Core" {
@@ -77,10 +77,10 @@ package "Word Processor Core" {
   }
 
   enum FormattingType {
-      BOLD
-      ITALIC
-      SUPERSCRIPT
-      LOWERSCRIPT
+    BOLD
+    ITALIC
+    SUPERSCRIPT
+    LOWERSCRIPT
   }
 }
 

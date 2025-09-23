@@ -5,3 +5,9 @@ class FormattingType(Enum):
     ITALIC = "italic"
     LOWERSCRIPT = "lowerscript"
     SUPERSCRIPT = "superscript"
+
+class MarginType(Enum):
+    LEFT = "left"
+    RIGHT = "right"
+    TOP = "top"
+    BOTTOM = "bottom"

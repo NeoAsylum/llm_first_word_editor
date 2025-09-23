@@ -3,7 +3,7 @@ import urllib.request
 from fastmcp import FastMCP
 from typing import List, Optional
 from pydantic import BaseModel
-from word_processor.enums import FormattingType
+from word_processor.enums import FormattingType, MarginType
 
 # Use a single FastMCP instance
 mcp = FastMCP(name="My MCP Server")
@@ -171,20 +171,25 @@ def find(search_term: str) -> Optional[FindResult]:
 
 
 @mcp.tool
-def delete(paragraph_index: int) -> MessageResponse:
+def delete_substring(paragraph_index: int, string_index: int, length: int) -> MessageResponse:
     """
-    Deletes a paragraph from the document based on its index.
-
-    The document is a list of paragraphs, and this function removes one of them.
-    Use 'get_document' to see the list of paragraphs and their indices.
-
+    Deletes a substring from a paragraph.
+    Use the find tool to find the paragraph and index of a substring to delete. Correct paragraph and index can change in between every action.
     Args:
-        paragraph_index: The index of the paragraph to delete.
+        paragraph_index: The index of the paragraph to delete from.
+        string_index: The starting index of the substring to delete.
+        length: The length of the substring to delete.
     """
+    data = {
+        "paragraph_index": paragraph_index,
+        "string_index": string_index,
+        "length": length,
+    }
     req = urllib.request.Request(
-        f"{EDITOR_API_URL}/document/delete_paragraph/{paragraph_index}",
+        f"{EDITOR_API_URL}/document/delete_substring",
+        data=json.dumps(data).encode(),
         headers={"Content-Type": "application/json"},
-        method="DELETE",
+        method="POST",
     )
     try:
         with urllib.request.urlopen(req) as response:
@@ -196,7 +201,7 @@ def delete(paragraph_index: int) -> MessageResponse:
                     message=f"Error: Received status {response.status}"
                 )
     except Exception as e:
-        return MessageResponse(message=f"Error deleting object: {e}")
+        return MessageResponse(message=f"Error deleting substring: {e}")
 
 
 @mcp.tool
@@ -258,6 +263,36 @@ def load_document(filename: str) -> MessageResponse:
     except Exception as e:
         return MessageResponse(message=f"Error loading document: {e}")
 
+@mcp.tool
+def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
+    """
+    Sets a specific margin for the document.
+
+    Args:
+        margin_type: The type of margin to set. Valid options are: 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'.
+        value_mm: The value of the margin in millimeters.
+    """
+    data = {
+        "margin_type": margin_type.value,
+        "value_mm": value_mm,
+    }
+    req = urllib.request.Request(
+        f"{EDITOR_API_URL}/document/set_margin",
+        data=json.dumps(data).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 200:
+                response_data = json.loads(response.read().decode())
+                return MessageResponse(**response_data)
+            else:
+                return MessageResponse(
+                    message=f"Error: Received status {response.status}"
+                )
+    except Exception as e:
+        return MessageResponse(message=f"Error setting margin: {e}")
 
 if __name__ == "__main__":
     mcp.run(transport="http", port=8000)

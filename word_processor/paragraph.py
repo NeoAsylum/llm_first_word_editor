@@ -13,6 +13,9 @@ class Paragraph(BaseModel):
     lowerscript: bool = False
     superscript: bool = False
 
+    def delete(self, index: int, length: int):
+        self.content = self.content[:index] + self.content[index + length:]
+
     def insert(self, text: str, index: int):
         self.content = self.content[:index] + text + self.content[index:]
 
