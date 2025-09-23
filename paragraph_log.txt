@@ -144,3 +144,135 @@
 2025-09-23 11:25:25,014 - Processing content: sample 
 2025-09-23 11:25:25,014 - Processing content: document. 
  And i am trying out some stuff right here. 
+2025-09-23 11:39:29,281 - Processing content: 
+2025-09-23 11:39:29,282 - Processing content: sample 
+2025-09-23 11:39:29,283 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:01,980 - Processing content: 
+2025-09-23 11:40:01,980 - Processing content: sample 
+2025-09-23 11:40:01,980 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:02,271 - Processing content: 
+2025-09-23 11:40:02,271 - Processing content: sample 
+2025-09-23 11:40:02,271 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:02,713 - Processing content: 
+2025-09-23 11:40:02,713 - Processing content: sample 
+2025-09-23 11:40:02,713 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:03,372 - Processing content: 
+2025-09-23 11:40:03,372 - Processing content: sample 
+2025-09-23 11:40:03,372 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:04,095 - Processing content: 
+2025-09-23 11:40:04,095 - Processing content: sample 
+2025-09-23 11:40:04,096 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:04,623 - Processing content: 
+2025-09-23 11:40:04,623 - Processing content: sample 
+2025-09-23 11:40:04,623 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:05,126 - Processing content: 
+2025-09-23 11:40:05,127 - Processing content: sample 
+2025-09-23 11:40:05,127 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:06,851 - Processing content: 
+2025-09-23 11:40:06,851 - Processing content: 
+2025-09-23 11:40:06,851 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:08,528 - Processing content: 
+2025-09-23 11:40:08,528 - Processing content: 
+2025-09-23 11:40:08,529 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:09,935 - Processing content: 
+2025-09-23 11:40:09,936 - Processing content: 
+2025-09-23 11:40:09,936 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:10,885 - Processing content: 
+2025-09-23 11:40:10,885 - Processing content: 
+2025-09-23 11:40:10,885 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:40:13,414 - Processing content: 
+2025-09-23 11:40:13,414 - Processing content: 
+2025-09-23 11:40:13,416 - Processing content: re. 
+2025-09-23 11:40:16,927 - Processing content: 
+2025-09-23 11:40:16,927 - Processing content: 
+2025-09-23 11:40:16,927 - Processing content: re. 
+2025-09-23 11:40:17,548 - Processing content: 
+2025-09-23 11:40:17,548 - Processing content: 
+2025-09-23 11:40:17,548 - Processing content: re. 
+2025-09-23 11:40:18,916 - Processing content: 
+2025-09-23 11:40:18,916 - Processing content: 
+2025-09-23 11:40:18,916 - Processing content: 
+2025-09-23 11:40:45,351 - Processing content: Barnaby
+2025-09-23 11:40:45,351 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 11:40:45,351 - Processing content: Barnaby
+2025-09-23 11:40:45,352 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 11:40:45,352 - Processing content: Barnaby
+2025-09-23 11:40:45,352 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 11:40:45,352 - Processing content: sample 
+2025-09-23 11:40:45,352 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:41:18,697 - Processing content: Barnaby
+2025-09-23 11:41:18,697 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 11:41:18,697 - Processing content: Barnaby
+2025-09-23 11:41:18,697 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 11:41:18,697 - Processing content: Barnaby
+2025-09-23 11:41:18,697 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 11:41:18,697 - Processing content: sample 
+2025-09-23 11:41:18,697 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 11:41:21,403 - Processing content: Barnaby
+2025-09-23 11:41:21,403 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 11:41:21,404 - Processing content: Barnaby
+2025-09-23 11:41:21,404 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 11:41:21,404 - Processing content: Barnaby
+2025-09-23 11:41:21,404 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 11:41:21,404 - Processing content: sample 
+2025-09-23 11:41:21,404 - Processing content:  
+2025-09-23 11:41:25,573 - Processing content: Barnaby
+2025-09-23 11:41:25,573 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 11:41:25,573 - Processing content: Barnaby
+2025-09-23 11:41:25,573 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 11:41:25,573 - Processing content: Barnaby
+2025-09-23 11:41:25,573 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 11:41:25,574 - Processing content: sample 
+2025-09-23 11:41:25,574 - Processing content:  
+2025-09-23 11:41:27,953 - Processing content: Barnaby
+2025-09-23 11:41:27,953 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 11:41:27,953 - Processing content: Barnaby
+2025-09-23 11:41:27,954 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 11:41:27,954 - Processing content: Barnaby
+2025-09-23 11:41:27,954 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 11:41:27,954 - Processing content: 
+2025-09-23 11:41:27,954 - Processing content:  
+2025-09-23 11:41:33,477 - Processing content: Barnaby
+2025-09-23 11:41:33,477 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 11:41:33,477 - Processing content: Barnaby
+2025-09-23 11:41:33,478 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 11:41:33,478 - Processing content: Barnaby
+2025-09-23 11:41:33,478 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.
+2025-09-23 11:41:33,478 - Processing content: 
+2025-09-23 11:41:33,478 - Processing content:  
+2025-09-23 11:58:57,699 - python-dotenv could not parse statement starting at line 3
+2025-09-23 12:06:54,456 - python-dotenv could not parse statement starting at line 3
+2025-09-23 12:12:20,504 - Processing content: Barnaby
+2025-09-23 12:12:20,505 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 12:12:20,505 - Processing content: Barnaby
+2025-09-23 12:12:20,505 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 12:12:20,505 - Processing content: Barnaby
+2025-09-23 12:12:20,506 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 12:12:20,506 - Processing content: sample 
+2025-09-23 12:12:20,506 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-23 12:19:09,004 - Processing content: BarnabyAlmonds sweet, a nutty treat,
+Like sunshine warm, oh so complete.
+
+2025-09-23 12:19:09,004 - Processing content: , a fluffy golden retriever puppy, opened his eyes to the world on a bustling little farm. His first wobbly steps led him through soft hay and into the warm sunlight. Each day was an adventure, filled with new smells and exciting discoveries. He chased after butterflies in the meadow, his tiny barks echoing with joy. The old barn cat, Mittens, would often bat playfully at his tail. 
+2025-09-23 12:19:09,004 - Processing content: Barnaby
+2025-09-23 12:19:09,004 - Processing content:  made friends with the sheep, nudging them gently with his nose. He learned to herd the ducks, though often he was more of a playful nuisance. As weeks turned into months, 
+2025-09-23 12:19:09,004 - Processing content: Barnaby
+2025-09-23 12:19:09,005 - Processing content:  grew bigger, but his heart remained full of puppy-like wonder. He still loved to splash in puddles after a rain shower. His days were spent patrolling the fields, ensuring all was well. The farmer, old Mr. Abernathy, often smiled at Barnaby's boundless energy. He was a loyal companion, always by the farmer's side during chores. Barnaby truly became the heart of the small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true farm dog through and through.This is a 
+2025-09-23 12:19:09,005 - Processing content: sample 
+2025-09-23 12:19:09,005 - Processing content: document. 
+ And i am trying out some stuff right here. 

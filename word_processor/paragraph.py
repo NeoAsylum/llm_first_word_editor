@@ -4,7 +4,10 @@ import html
 import re
 import logging
 
-logging.basicConfig(filename='paragraph_log.txt', level=logging.INFO, format='%(asctime)s - %(message)s')
+logging.basicConfig(
+    filename="paragraph_log.txt", level=logging.INFO, format="%(asctime)s - %(message)s"
+)
+
 
 class Paragraph(BaseModel):
     content: str
@@ -14,7 +17,7 @@ class Paragraph(BaseModel):
     superscript: bool = False
 
     def delete(self, index: int, length: int):
-        self.content = self.content[:index] + self.content[index + length:]
+        self.content = self.content.replace(self.content[index : index + length], "")
 
     def insert(self, text: str, index: int):
         self.content = self.content[:index] + text + self.content[index:]
@@ -36,7 +39,7 @@ class Paragraph(BaseModel):
     def to_html(self) -> str:
         logging.info(f"Processing content: {self.content}")
         text = html.escape(self.content)
-        text = re.sub(r'\n+', '<br>', text)
+        text = re.sub(r"\n+", "<br>", text)
         if self.bold:
             text = f"<b>{text}</b>"
         if self.italic:
