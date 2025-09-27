@@ -52,8 +52,8 @@ class LoadRequest(BaseModel):
 
 
 class SwitchFormattingRequest(BaseModel):
-    index: int
-    length: int
+    start_index: int
+    end_index: int
     formatting_type: FormattingType
 
 
@@ -143,14 +143,14 @@ def delete_substring(req: DeleteRequest):
 @app.post("/format/switch", response_model=MessageResponse)
 def switch_formatting(req: SwitchFormattingRequest):
     print(
-        f"Tool call: switch_formatting for index={req.index}, length={req.length}, type={req.formatting_type.value}"
+        f"Tool call: switch_formatting for start_index={req.start_index}, end_index={req.end_index}, type={req.formatting_type.value}"
     )
     try:
         doc.switch_formatting(
-            req.index, req.length, req.formatting_type
+            req.start_index, req.end_index, req.formatting_type
         )
         return MessageResponse(
-            message=f"Formatting {req.formatting_type.value} switched for object at index {req.index}."
+            message=f"Formatting {req.formatting_type.value} switched for selection from index {req.start_index} to {req.end_index}."
         )
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))

@@ -199,7 +199,7 @@ async def main():
     parser.add_argument(
         "--gemini_model",
         type=str,
-        default="gemini-1.5-flash",
+        default="gemini-2.5-flash",
         help="Gemini model to use.",
     )
     parser.add_argument(

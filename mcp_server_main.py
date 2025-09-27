@@ -130,8 +130,8 @@ def insert_string(
 
 @mcp.tool
 def switch_formatting(
-    index: int,
-    length: int,
+    start_index: int,
+    end_index: int,
     formatting_type: FormattingType,
 ) -> MessageResponse:
     """
@@ -141,13 +141,13 @@ def switch_formatting(
     Applying formatting to a sub-segment of a paragraph will cause the paragraph to be split into multiple paragraphs.
 
     Args:
-        index: The starting character index of the text segment to format.
-        length: The number of characters in the text segment to format.
+        start_index: The starting character index of the text segment to format.
+        end_index: The ending character index of the text segment to format.
         formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT'.
     """
     data = {
-        "index": index,
-        "length": length,
+        "start_index": start_index,
+        "end_index": end_index,
         "formatting_type": formatting_type.value,
     }
     req = urllib.request.Request(
