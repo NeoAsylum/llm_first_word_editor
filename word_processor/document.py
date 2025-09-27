@@ -49,6 +49,7 @@ class Document(BaseModel):
 
     def to_html(self) -> str:
         html_parts = []
+        html_parts.append("<style>h1, h2, h3, p { display: inline; }</style>")
 
         if self._content:
             main_content = "".join(so.to_html() for so in self._content)
@@ -177,19 +178,28 @@ class Document(BaseModel):
     ):
         index = self._content.index(p)
         p_start = self.create_paragraph(
-            content=p.content[: max(start_index - p.start_index, 0)]
+            content=p.content[: max(start_index - p.start_index, 0)],
+            bold=p.bold,
+            italic=p.italic,
+            lowerscript=p.lowerscript,
+            superscript=p.superscript,
+            hierarchy=p.hierarchy,
         )
         if p_start.content != "":
             self._content.insert(index, p_start)
         p_end = self.create_paragraph(
-            content=p.content[len(p.content) - max(p.end_index - end_index, 0) - 1: ]
+            content=p.content[len(p.content) - max(p.end_index - end_index, 0) :],
+            bold=p.bold,
+            italic=p.italic,
+            lowerscript=p.lowerscript,
+            superscript=p.superscript,
+            hierarchy=p.hierarchy,
         )
         if p_end.content != "":
             self._content.insert(index + 2, p_end)
         p.content = p.content[
             max(start_index - p.start_index, 0) : len(p.content)
             - max(p.end_index - end_index, 0)
-            - 1
         ]
         p.switch_formatting(formatting_type.value)
 

@@ -117,7 +117,7 @@ def switch_formatting(
     Args:
         start_index: The starting character index of the text segment to format.
         end_index: The ending character index of the text segment to format.
-        formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT'.
+        formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT', 'TITLE', 'HEADING', 'SUBHEADING', 'BODY'.
     """
     data = {
         "start_index": start_index,

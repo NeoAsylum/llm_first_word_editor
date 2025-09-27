@@ -5,6 +5,10 @@ class FormattingType(Enum):
     ITALIC = "italic"
     LOWERSCRIPT = "lowerscript"
     SUPERSCRIPT = "superscript"
+    TITLE = "title"
+    HEADING = "heading"
+    SUBHEADING = "subheading"
+    BODY = "body"
 
 class MarginType(Enum):
     LEFT = "left"

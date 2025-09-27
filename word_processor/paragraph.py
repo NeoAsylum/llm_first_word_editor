@@ -3,6 +3,7 @@ from typing import Optional, List
 import html
 import re
 import logging
+from word_processor.enums import FormattingType
 
 logging.basicConfig(
     filename="paragraph_log.txt", level=logging.INFO, format="%(asctime)s - %(message)s"
@@ -18,6 +19,7 @@ class Paragraph(BaseModel):
     italic: bool = False
     lowerscript: bool = False
     superscript: bool = False
+    hierarchy: FormattingType = FormattingType.BODY
 
     def delete(self, start_index: int, end_index: int):
         self.content = self.content[:start_index] + self.content[end_index:]
@@ -25,17 +27,17 @@ class Paragraph(BaseModel):
     def insert(self, text: str, index: int):
         self.content = self.content[:index] + text + self.content[index:]
 
-    def switch_formatting(
-        self, formatting_type: str
-    ):
-        if formatting_type == "bold":
+    def switch_formatting(self, formatting_type: FormattingType):
+        if formatting_type == FormattingType.BOLD.value:
             self.bold = not self.bold
-        elif formatting_type == "italic":
+        elif formatting_type == FormattingType.ITALIC.value:
             self.italic = not self.italic
-        elif formatting_type == "lowerscript":
+        elif formatting_type == FormattingType.LOWERSCRIPT.value:
             self.lowerscript = not self.lowerscript
-        elif formatting_type == "superscript":
+        elif formatting_type == FormattingType.SUPERSCRIPT.value:
             self.superscript = not self.superscript
+        else:
+            self.hierarchy = formatting_type
 
     def to_html(self) -> str:
         logging.info(f"Processing content: {self.content}")
@@ -49,6 +51,13 @@ class Paragraph(BaseModel):
             text = f"<sub>{text}</sub>"
         if self.superscript:
             text = f"<sup>{text}</sup>"
+
+        if self.hierarchy == FormattingType.TITLE.value:
+            text = f"<h1>{text}</h1>"
+        elif self.hierarchy == FormattingType.HEADING.value:
+            text = f"<h2>{text}</h2>"
+        elif self.hierarchy == FormattingType.SUBHEADING.value:
+            text = f"<h3>{text}</h3>"
         return text
 
     def can_merge_with(self, other: "Paragraph") -> bool:
@@ -57,6 +66,7 @@ class Paragraph(BaseModel):
             and self.italic == other.italic
             and self.lowerscript == other.lowerscript
             and self.superscript == other.superscript
+            and self.hierarchy == other.hierarchy
         )
 
     def merge(self, other: "Paragraph"):

@@ -19,7 +19,7 @@ load_dotenv()
 SAVES_DIR = os.getenv("SAVES_DIR")
 
 doc.insert_at_index("This is a sample document. \n And i am trying out some stuff right here. ", 0)
-doc.switch_formatting(start_index=10, end_index=16, formatting_type=FormattingType.BOLD)
+doc.switch_formatting(start_index=10, end_index=17, formatting_type=FormattingType.BOLD)
 
 # --- Request Models ---
 
