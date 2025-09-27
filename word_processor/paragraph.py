@@ -10,31 +10,32 @@ logging.basicConfig(
 
 
 class Paragraph(BaseModel):
+    paragraph_id: int
+    start_index: int = 0
+    end_index: int = 0
     content: str
     bold: bool = False
     italic: bool = False
     lowerscript: bool = False
     superscript: bool = False
 
-    def delete(self, index: int, length: int):
-        self.content = self.content.replace(self.content[index : index + length], "")
+    def delete(self, start_index: int, end_index: int):
+        self.content = self.content[:start_index] + self.content[end_index:]
 
     def insert(self, text: str, index: int):
         self.content = self.content[:index] + text + self.content[index:]
 
-    def find(self, text: str) -> List[int]:
-        if not text:
-            return []
-
-        indices = []
-        start_index = 0
-        while True:
-            pos = self.content.find(text, start_index)
-            if pos == -1:
-                break
-            indices.append(pos)
-            start_index = pos + 1
-        return indices
+    def switch_formatting(
+        self, formatting_type: str
+    ):
+        if formatting_type == "bold":
+            self.bold = not self.bold
+        elif formatting_type == "italic":
+            self.italic = not self.italic
+        elif formatting_type == "lowerscript":
+            self.lowerscript = not self.lowerscript
+        elif formatting_type == "superscript":
+            self.superscript = not self.superscript
 
     def to_html(self) -> str:
         logging.info(f"Processing content: {self.content}")

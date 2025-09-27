@@ -11,6 +11,8 @@ mcp = FastMCP(name="My MCP Server")
 
 # --- Pydantic Models ---
 class Paragraph(BaseModel):
+    start_index: int
+    end_index: int
     content: str
     bold: bool = False
     italic: bool = False
@@ -19,7 +21,6 @@ class Paragraph(BaseModel):
 
 
 class FindResult(BaseModel):
-    length: int
     locations: List[tuple[int, int]]
 
 
@@ -31,47 +32,82 @@ class MessageResponse(BaseModel):
 EDITOR_API_URL = "http://localhost:8001"
 
 
+# @mcp.tool
+# def get_document_structure() -> List[Paragraph]:
+#     """
+#     Retrieves the structured content of the entire document.
+
+#     The document is represented as a list of 'Paragraph' objects. Each 'Paragraph' has a 'content' field (the text) and boolean formatting properties (e.g., 'bold', 'italic').
+
+#     A new 'Paragraph' object is created whenever the text formatting changes. This provides a granular, structured view of the document's content and styling, which is essential for targeted editing.
+
+#     Use this tool to get an overview of the document's structure.
+#     """
+#     try:
+#         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
+#             if response.status == 200:
+#                 content_data = json.loads(response.read().decode())
+#                 return content_data
+#             else:
+#                 return []
+#     except Exception as e:
+#         print(f"Error in get_document_structure: {e}")
+#         return []
+
+
 @mcp.tool
-def get_document() -> List[Paragraph]:
+def get_text() -> str:
     """
-    Retrieves the entire document's content. The document is represented as a list of 'Paragraph' objects.
-    Each 'Paragraph' object has a 'content' (the text) and formatting properties (bold, italic, etc.).
-    A new 'Paragraph' object is created whenever the text formatting changes.
-    This allows for a structured representation of the document's content and styling.
+    Retrieves the entire document's content as a single plain text string.
+
+    This tool is useful for quickly reading the document's text without any formatting information.
     """
     try:
-        with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
+        with urllib.request.urlopen(f"{EDITOR_API_URL}/document/text_only") as response:
             if response.status == 200:
-                content_data = json.loads(response.read().decode())
-                return content_data
+                return response.read().decode()
             else:
-                return []
+                return ""
     except Exception as e:
-        print(f"Error in get_document: {e}")
-        return []
+        print(f"Error in get_text: {e}")
+        return ""
+
+
+@mcp.tool
+def get_html() -> str:
+    """
+    Retrieves the HTML representation of the document.
+
+    This tool is useful for understanding the visual layout and formatting of the document as it would appear in a web browser.
+    """
+    try:
+        with urllib.request.urlopen(f"{EDITOR_API_URL}/document/html") as response:
+            if response.status == 200:
+                return response.read().decode()
+            else:
+                return ""
+    except Exception as e:
+        print(f"Error in get_html: {e}")
+        return ""
 
 
 @mcp.tool
 def insert_string(
     text: str,
-    paragraph_index: int,
-    string_index: int,
+    index: int,
 ) -> MessageResponse:
     """
-    Inserts a string of text into a specific paragraph at a given index.
+    Inserts a string of text into the document at a given character index.
 
-    To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' tool to get the precise paragraph_index and string_index for the desired insertion point.
-    Incorrect indices may lead to unexpected behavior or errors.
+    To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' or 'get_document_structure' tool to get the precise 'index'.
 
     Args:
-        text: The string of text to insert.
-        paragraph_index: The index of the paragraph to insert the text into.
-        string_index: The character index within the paragraph's content where the text should be inserted.
+        text: The string of text to insert. Can include newline characters (\n).
+        index: The character index within the document's content where the text should be inserted.
     """
     data = {
         "text": text,
-        "paragraph_index": paragraph_index,
-        "string_index": string_index,
+        "index": index,
     }
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/insert_string",
@@ -94,7 +130,6 @@ def insert_string(
 
 @mcp.tool
 def switch_formatting(
-    paragraph_index: int,
     index: int,
     length: int,
     formatting_type: FormattingType,
@@ -103,16 +138,14 @@ def switch_formatting(
     Toggles a specific formatting style (e.g., bold, italic) on a segment of text within a paragraph.
 
     This function will apply the specified formatting if it's not present, or remove it if it is already applied.
-    For example, if the text is already bold and you call this with 'BOLD', it will become not bold.
+    Applying formatting to a sub-segment of a paragraph will cause the paragraph to be split into multiple paragraphs.
 
     Args:
-        paragraph_index: The index of the paragraph to modify.
         index: The starting character index of the text segment to format.
         length: The number of characters in the text segment to format.
         formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT'.
     """
     data = {
-        "paragraph_index": paragraph_index,
         "index": index,
         "length": length,
         "formatting_type": formatting_type.value,
@@ -137,16 +170,14 @@ def switch_formatting(
 
 
 @mcp.tool
-def find(search_term: str) -> Optional[FindResult]:
+def find(search_term: str) -> FindResult:
     """
-    Searches the entire document for a given search term.
+    Searches the entire document for a given search term and returns all occurrences.
 
     Returns a 'FindResult' object which contains:
-    - 'length': The character length of the search_term.
-    - 'locations': A list of tuples, where each tuple contains the 'paragraph_index' and 'index_in_paragraph' of a match.
+    - 'locations': A list of tuples, where each tuple contains the 'start_index' and 'end_index' of a match.
 
-    This tool is very useful for finding the exact coordinates to use with other tools like 'insert_string' or 'switch_formatting'.
-    It is recommended to use 'get_document' first to have an idea of the document's content.
+    This tool is very useful for finding the exact coordinates ('start_index' and 'end_index') to use with other tools like 'insert_string' or 'switch_formatting'.
 
     Args:
         search_term: The text to search for in the document.
@@ -171,19 +202,20 @@ def find(search_term: str) -> Optional[FindResult]:
 
 
 @mcp.tool
-def delete_substring(paragraph_index: int, string_index: int, length: int) -> MessageResponse:
+def delete_substring(start_index: int, end_index: int) -> MessageResponse:
     """
-    Deletes a substring from a paragraph.
-    Use the find tool to find the paragraph and index of a substring to delete. Correct paragraph and index can change in between every action.
+    Deletes a substring from the document.
+
+    Use the 'find' or 'get_document_structure' tool to get the correct 'start_index' and 'end_index' before using this tool.
+    Incorrect indices may lead to unexpected behavior or errors.
+
     Args:
-        paragraph_index: The index of the paragraph to delete from.
-        string_index: The starting index of the substring to delete.
-        length: The length of the substring to delete.
+        start_index: The starting index of the substring to delete.
+        end_index: The ending index of the substring to delete. This letter also gets deleted.
     """
     data = {
-        "paragraph_index": paragraph_index,
-        "string_index": string_index,
-        "length": length,
+        "start_index": start_index,
+        "end_index": end_index,
     }
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/delete_substring",
@@ -207,10 +239,9 @@ def delete_substring(paragraph_index: int, string_index: int, length: int) -> Me
 @mcp.tool
 def save_document(filename: str) -> MessageResponse:
     """
-    Saves the current state of the document to a file.
+    Saves the current state of the document to a file in JSON format.
 
-    The file will be saved in a pre-configured 'saves' directory.
-    You only need to provide the filename, not the full path.
+    The file will be saved in a pre-configured 'saves' directory. You only need to provide the filename, not the full path.
 
     Args:
         filename: The name of the file to save the document as (e.g., 'my_document.txt').
@@ -237,10 +268,9 @@ def save_document(filename: str) -> MessageResponse:
 @mcp.tool
 def load_document(filename: str) -> MessageResponse:
     """
-    Loads a document from a file, replacing the current document content.
+    Loads a document from a JSON file, replacing the current document content.
 
-    The file will be loaded from a pre-configured 'saves' directory.
-    You only need to provide the filename, not the full path.
+    The file will be loaded from a pre-configured 'saves' directory. You only need to provide the filename, not the full path.
 
     Args:
         filename: The name of the file to load the document from (e.g., 'my_document.txt').
@@ -263,10 +293,11 @@ def load_document(filename: str) -> MessageResponse:
     except Exception as e:
         return MessageResponse(message=f"Error loading document: {e}")
 
+
 @mcp.tool
 def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
     """
-    Sets a specific margin for the document.
+    Sets a specific margin for the document. The value is converted to cm internally.
 
     Args:
         margin_type: The type of margin to set. Valid options are: 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'.
@@ -293,6 +324,7 @@ def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
                 )
     except Exception as e:
         return MessageResponse(message=f"Error setting margin: {e}")
+
 
 if __name__ == "__main__":
     mcp.run(transport="http", port=8000)

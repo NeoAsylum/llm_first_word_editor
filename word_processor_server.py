@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from pydantic import BaseModel
 import uvicorn
 from typing import List
@@ -18,25 +18,29 @@ doc = Document()
 load_dotenv()
 SAVES_DIR = os.getenv("SAVES_DIR")
 
-doc.insert("This is a ", 0, 0)
-doc.insert("sample ", 0, 11)
-doc.insert("document. \n And i am trying out some stuff right here. ", 0, 18)
-doc.switch_formatting(0, 10, 7, FormattingType.BOLD)
+doc.insert_at_index("This is a sample document. \n And i am trying out some stuff right here. ", 0)
+doc.switch_formatting(start_index=10, end_index=16, formatting_type=FormattingType.BOLD)
 
 # --- Request Models ---
+
 
 class DocumentRequest(BaseModel):
     content: List[Paragraph]
 
 
+class FindResult(BaseModel):
+    locations: List[tuple[int, int]]
+
+
 class FindRequest(BaseModel):
     search_term: str
+    start_index: int = 0
+    end_index: int = -1
 
 
 class InsertStringRequest(BaseModel):
     text: str
-    paragraph_index: int
-    string_index: int
+    index: int
 
 
 class SaveRequest(BaseModel):
@@ -48,25 +52,23 @@ class LoadRequest(BaseModel):
 
 
 class SwitchFormattingRequest(BaseModel):
-    paragraph_index: int
     index: int
     length: int
     formatting_type: FormattingType
+
 
 class SetMarginRequest(BaseModel):
     margin_type: MarginType
     value_mm: int
 
+
 class DeleteRequest(BaseModel):
-    paragraph_index: int
-    string_index: int
-    length: int
+    start_index: int
+    end_index: int
 
 
 # --- Response Models ---
-class FindResult(BaseModel):
-    length: int
-    locations: List[tuple[int, int]]
+
 
 
 class MessageResponse(BaseModel):
@@ -104,27 +106,35 @@ def get_document_html():
 
 
 @app.post("/document/find_in_body", response_model=FindResult)
-def find_in_body(req: FindRequest):
+def find_in_body(req: FindRequest) -> FindResult:
     print(f"Tool call: find_in_body with search_term='{req.search_term}'")
-    return doc.find_in_body(req.search_term)
+    locations = doc.find_in_body(req.search_term, req.start_index, req.end_index)
+    return FindResult(locations=locations)
 
 
 @app.post("/document/insert_string", response_model=MessageResponse)
 def insert_object(req: InsertStringRequest) -> MessageResponse:
     try:
-        doc.insert(req.text, req.paragraph_index, req.string_index)
+        doc.insert_at_index(req.text, req.index)
         return MessageResponse(
-            message=f"Text inserted at paragraph {req.paragraph_index}, index {req.string_index}."
+            message=f"Text inserted at index {req.index}."
         )
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
+@app.get("/document/text_only", response_class=PlainTextResponse)
+def get_text_only() -> str:
+    try:
+        return doc.get_text_only()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/document/delete_substring", response_model=MessageResponse)
 def delete_substring(req: DeleteRequest):
     try:
-        doc.delete(req.paragraph_index, req.string_index, req.length)
+        doc.delete(req.start_index, req.end_index)
         return MessageResponse(message="Substring deleted.")
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -133,14 +143,14 @@ def delete_substring(req: DeleteRequest):
 @app.post("/format/switch", response_model=MessageResponse)
 def switch_formatting(req: SwitchFormattingRequest):
     print(
-        f"Tool call: switch_formatting for paragraph_index={req.paragraph_index}, index={req.index}, length={req.length}, type={req.formatting_type.value}"
+        f"Tool call: switch_formatting for index={req.index}, length={req.length}, type={req.formatting_type.value}"
     )
     try:
         doc.switch_formatting(
-            req.paragraph_index, req.index, req.length, req.formatting_type
+            req.index, req.length, req.formatting_type
         )
         return MessageResponse(
-            message=f"Formatting {req.formatting_type.value} switched for object at index {req.paragraph_index}."
+            message=f"Formatting {req.formatting_type.value} switched for object at index {req.index}."
         )
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -167,11 +177,14 @@ def load_document(req: LoadRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/document/set_margin", response_model=MessageResponse)
 def set_margin(req: SetMarginRequest):
     try:
         doc.set_margin(req.margin_type, req.value_mm)
-        return MessageResponse(message=f"Margin {req.margin_type.value} set to {req.value_mm}mm.")
+        return MessageResponse(
+            message=f"Margin {req.margin_type.value} set to {req.value_mm}mm."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

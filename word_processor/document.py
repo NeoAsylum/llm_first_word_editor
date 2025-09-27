@@ -11,12 +11,25 @@ class Document(BaseModel):
     margin_right: float = 2.5
     margin_top: float = 2.5
     margin_bottom: float = 2.5
+    next_paragraph_id: int = 1
     _content: List[Paragraph] = []
-    _content.append(Paragraph(content=""))
+    _content.append(Paragraph(content="", paragraph_id=0))
+
+    def _get_paragraph_by_id(self, paragraph_id: int) -> tuple[int, Paragraph]:
+        for i, p in enumerate(self._content):
+            if p.paragraph_id == paragraph_id:
+                return i, p
+        raise ValueError(f"Paragraph with id {paragraph_id} not found")
 
     def create_paragraph(self, **kwargs) -> Paragraph:
-        self.join_paragraphs()
-        return Paragraph(**kwargs)
+        par = Paragraph(paragraph_id=self.next_paragraph_id, **kwargs)
+        self.next_paragraph_id += 1
+        return par
+
+    def get_text_only(self) -> str:
+        result: str
+        result = "".join(so.content for so in self._content)
+        return result
 
     def save(self, filename: str, saves_dir: str):
         os.makedirs(saves_dir, exist_ok=True)
@@ -46,94 +59,139 @@ class Document(BaseModel):
 
         return "\n".join(html_parts)
 
-    def insert(self, text: str, paragraph_index: int, string_index: int) -> str:
-        if self._content.__len__() == 0:
-            self._content.append(Paragraph(content=""))
-        self._content[paragraph_index].insert(text, string_index)
-        self.join_paragraphs()
+    def insert_at_index(self, text: str, index: int):
+        """Inserts text at a specific index in the document."""
+        if not self._content:
+            self._content.append(Paragraph(content="", paragraph_id=0))
 
-    def find_in_body(self, text: str) -> dict:
-        locations = []
-        text_length = len(text)
+        target_paragraph = None
+        for p in self._content:
+            # The '+1' allows insertion at the very end of a paragraph's content
+            if p.start_index <= index <= p.end_index + 1:
+                target_paragraph = p
+                break
+
+        if target_paragraph is None:
+            # If index is out of bounds, default to the last paragraph
+            if self._content:
+                target_paragraph = self._content[-1]
+                # And insert at the end of it.
+                index = target_paragraph.end_index + 1
+            else:
+                # This case should ideally not be reached if the content is always initialized
+                raise IndexError("Cannot insert into a document with no paragraphs.")
+
+        # Calculate the insertion index relative to the paragraph's content
+        insertion_point = index - target_paragraph.start_index
+
+        # Perform the insertion on the paragraph
+        target_paragraph.insert(text, insertion_point)
+
+        # Consolidate and re-index the document
+        self.join_paragraphs()
+        self.recalculate_start_and_end()
+
+    def find_in_body(
+        self, text: str, start_index: int = 0, end_index: int = -1
+    ) -> List[tuple[int, int]]:
         if not text:
-            return {"length": 0, "locations": []}
+            return []
 
-        for i, so in enumerate(self._content):
-            for index in so.find(text):
-                locations.append((i, index))
-        self.join_paragraphs()
-        return {"length": text_length, "locations": locations}
+        full_text = self.get_text_only()
 
-    def delete(self, paragraph_index: int, string_index: int, length: int):
-        if paragraph_index < 0 or paragraph_index >= len(self._content):
-            raise IndexError("Paragraph index out of range.")
-        self._content[paragraph_index].delete(string_index, length)
+        if end_index == -1:
+            end_index = len(full_text)
+
+        locations = []
+        current_pos = start_index
+        while current_pos < end_index:
+            found_pos = full_text.find(text, current_pos, end_index)
+            if found_pos == -1:
+                break
+            locations.append((found_pos, found_pos + len(text) - 1))
+            current_pos = found_pos + 1
+
+        return locations
+
+    def delete(self, start_index: int, end_index: int):
+        if start_index > end_index:
+            return
+
+        start_p = None
+        end_p = None
+        start_p_index = -1
+        end_p_index = -1
+
+        for i, p in enumerate(self._content):
+            if p.start_index <= start_index <= p.end_index + 1:
+                start_p = p
+                start_p_index = i
+            if p.start_index <= end_index <= p.end_index + 1:
+                end_p = p
+                end_p_index = i
+
+        if start_p is None:
+            return
+
+        if end_p is None:
+            end_p_index = len(self._content) - 1
+            end_p = self._content[end_p_index]
+
+        relative_start = start_index - start_p.start_index
+        relative_end = end_index - end_p.start_index
+
+        if start_p is end_p:
+            start_p.content = (
+                start_p.content[:relative_start] + start_p.content[relative_end + 1 :]
+            )
+        else:
+            start_p.content = start_p.content[:relative_start]
+            end_p.content = end_p.content[relative_end + 1 :]
+
+            if start_p_index + 1 < end_p_index:
+                del self._content[start_p_index + 1 : end_p_index]
+
         self.join_paragraphs()
+        self.recalculate_start_and_end()
 
     def switch_formatting(
-        self,
-        paragraph_index: int,
-        index: int,
-        length: int,
-        formatting_type: FormattingType,
+        self, start_index: int, end_index: int, formatting_type: FormattingType
     ):
-        if paragraph_index < 0 or paragraph_index >= len(self._content):
-            raise IndexError("Paragraph index out of range.")
-
-        original_paragraph = self._content[paragraph_index]
-        original_content = original_paragraph.content
-
-        if (
-            index < 0
-            or index > len(original_content)
-            or (index + length) > len(original_content)
-        ):
-            raise IndexError("Index or length out of range for the paragraph content.")
-
-        # 1. Split the content
-        before_content = original_content[:index]
-        selected_content = original_content[index : index + length]
-        after_content = original_content[index + length :]
-
-        new_paragraphs = []
-
-        # 2. Create the "before" paragraph if it has content
-        if before_content:
-            before_paragraph = original_paragraph.model_copy()
-            before_paragraph.content = before_content
-            new_paragraphs.append(before_paragraph)
-
-        # 3. Create the "selected" paragraph with new formatting
-        if selected_content:
-            selected_paragraph = original_paragraph.model_copy()
-            selected_paragraph.content = selected_content
-
-            # Toggle the formatting
-            if formatting_type == FormattingType.BOLD:
-                selected_paragraph.bold = not selected_paragraph.bold
-            elif formatting_type == FormattingType.ITALIC:
-                selected_paragraph.italic = not selected_paragraph.italic
-            elif formatting_type == FormattingType.LOWERSCRIPT:
-                selected_paragraph.lowerscript = not selected_paragraph.lowerscript
-                if selected_paragraph.lowerscript:
-                    selected_paragraph.superscript = False
-            elif formatting_type == FormattingType.SUPERSCRIPT:
-                selected_paragraph.superscript = not selected_paragraph.superscript
-                if selected_paragraph.superscript:
-                    selected_paragraph.lowerscript = False
-
-            new_paragraphs.append(selected_paragraph)
-
-        # 4. Create the "after" paragraph if it has content
-        if after_content:
-            after_paragraph = original_paragraph.model_copy()
-            after_paragraph.content = after_content
-            new_paragraphs.append(after_paragraph)
-
-        # 5. Replace the original paragraph with the new paragraphs
-        self._content[paragraph_index : paragraph_index + 1] = new_paragraphs
-
+        copy_content = self._content.copy()
+        for p in copy_content:
+            if (
+                p.start_index <= start_index <= p.end_index
+                or p.end_index >= end_index >= p.start_index
+            ):
+                self.switch_style_within_paragraph(
+                    p,
+                    max(start_index, p.start_index),
+                    min(end_index, p.end_index),
+                    formatting_type,
+                )
         self.join_paragraphs()
+        self.recalculate_start_and_end()
+
+    def switch_style_within_paragraph(
+        self, p, start_index: int, end_index: int, formatting_type: FormattingType
+    ):
+        index = self._content.index(p)
+        p_start = self.create_paragraph(
+            content=p.content[: max(start_index - p.start_index, 0)]
+        )
+        if p_start.content != "":
+            self._content.insert(index, p_start)
+        p_end = self.create_paragraph(
+            content=p.content[len(p.content) - max(p.end_index - end_index, 0) - 1: ]
+        )
+        if p_end.content != "":
+            self._content.insert(index + 2, p_end)
+        p.content = p.content[
+            max(start_index - p.start_index, 0) : len(p.content)
+            - max(p.end_index - end_index, 0)
+            - 1
+        ]
+        p.switch_formatting(formatting_type.value)
 
     def get_content(self) -> List[Paragraph]:
         return self._content
@@ -152,6 +210,14 @@ class Document(BaseModel):
                 del self._content[i]
 
             i -= 1
+        self.recalculate_start_and_end()
+
+    def recalculate_start_and_end(self):
+        start_index: int = 0
+        for so in self._content:
+            so.start_index = start_index
+            so.end_index = so.start_index + len(so.content) - 1
+            start_index += len(so.content)
 
     def set_margin(self, margin_type: MarginType, value_mm: int):
         value_cm = value_mm / 10.0
