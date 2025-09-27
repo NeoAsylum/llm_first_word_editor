@@ -34,7 +34,12 @@ logging.getLogger("google.genai").setLevel(logging.ERROR)
 
 
 class GeminiAgentClient:
-    def __init__(self, server_url: str, gemini_model: str = "gemini-2.5-flash", system_prompt: str = None):
+    def __init__(
+        self,
+        server_url: str,
+        gemini_model: str = "gemini-2.5-flash",
+        system_prompt: str = None,
+    ):
         self.server_url = server_url
         self.gemini_model = gemini_model
         self.client = Client(server_url)
@@ -89,7 +94,9 @@ class GeminiAgentClient:
             )
         else:
             # Even if there is no preceding tool call, we still need to handle the message
-            return types.Content(role="function", parts=[types.Part(text=msg["content"])])
+            return types.Content(
+                role="function", parts=[types.Part(text=msg["content"])]
+            )
 
     def _convert_messages_to_gemini_content(
         self,
@@ -118,8 +125,7 @@ class GeminiAgentClient:
                 model=self.gemini_model,
                 contents=gemini_contents,
                 config=types.GenerateContentConfig(
-                    tools=[self.client.session],
-                    system_instruction=self.system_prompt
+                    tools=[self.client.session], system_instruction=self.system_prompt
                 ),
             )
             full_response_content = response.text
@@ -192,7 +198,7 @@ class GeminiAgentClient:
 async def main():
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
+
     load_dotenv()
 
     parser = argparse.ArgumentParser(description="Run the Gemini Agent Client.")
@@ -205,7 +211,7 @@ async def main():
     parser.add_argument(
         "--system_prompt",
         type=str,
-        default=os.getenv("SYSTEM_PROMPT", "You are a helpful assistant."),
+        default="You are a helpful assistant. You are the user interface to a word style document editor. You have access to multiple model context protocol tools via a mcp server that allow you to do the users bidding and edit this document. The user can see the document in real time, but can only interact with it through you. He can also not see the tool output, so you have to show him the return values of the tools you call. Always use get_text initially to understand file content. Use get_html to understand file structure. Also, when the user asks you for something use your tools to fullfill his request. Don't ask him for additional information. Get the information yourself using the tools provided.",
         help="The system prompt to use.",
     )
     args = parser.parse_args()

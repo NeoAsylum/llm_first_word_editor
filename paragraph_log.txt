@@ -691,3 +691,211 @@ he small farm, a beloved, happy dog. He lived a simple, fulfilling life, a true 
 2025-09-27 20:12:36,333 - Processing content: sample
 2025-09-27 20:12:36,333 - Processing content:  document. 
  And i am trying out some stuff right here. 
+2025-09-27 20:15:20,574 - Processing content: This is a 
+2025-09-27 20:15:20,574 - Processing content: sample
+2025-09-27 20:15:20,574 - Processing content:  document. 
+ And i am trying out some stuff right here. 
+2025-09-27 20:16:32,219 - Processing content: This is a 
+2025-09-27 20:16:32,219 - Processing content: sample
+2025-09-27 20:16:32,220 - Processing content:  document. 
+ And i am trying out some stuff right heI would like this to work.re. 
+2025-09-27 20:17:29,416 - Processing content: This is a 
+2025-09-27 20:17:29,417 - Processing content: sample
+2025-09-27 20:17:29,417 - Processing content:  document. 
+ And i am trying out some stuff right heI would like this to work.re. 
+2025-09-27 20:17:44,296 - Processing content: This is a 
+2025-09-27 20:17:44,297 - Processing content: sample
+2025-09-27 20:17:44,297 - Processing content:  document. 
+ And i am trying out some stuff right here. 
+2025-09-27 20:17:50,037 - Processing content: This is a 
+2025-09-27 20:17:50,038 - Processing content: sample
+2025-09-27 20:17:50,038 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:20:13,859 - Processing content: This is a 
+2025-09-27 20:20:13,860 - Processing content: sample
+2025-09-27 20:20:13,860 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:20:14,657 - Processing content: This is a 
+2025-09-27 20:20:14,657 - Processing content: sample
+2025-09-27 20:20:14,658 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:21:36,012 - Processing content: This is a 
+2025-09-27 20:21:36,012 - Processing content: sample
+2025-09-27 20:21:36,012 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this 
+2025-09-27 20:21:36,012 - Processing content: to wor
+2025-09-27 20:21:36,012 - Processing content: k.
+2025-09-27 20:21:52,979 - Processing content: This is a 
+2025-09-27 20:21:52,979 - Processing content: sample
+2025-09-27 20:21:52,979 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this 
+2025-09-27 20:21:52,979 - Processing content: to wor
+2025-09-27 20:21:52,979 - Processing content: k.
+2025-09-27 20:22:10,460 - Processing content: This is a 
+2025-09-27 20:22:10,460 - Processing content: sample
+2025-09-27 20:22:10,460 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this 
+2025-09-27 20:22:10,460 - Processing content: to wor
+2025-09-27 20:22:10,460 - Processing content: k.
+2025-09-27 20:22:18,005 - Processing content: This is a 
+2025-09-27 20:22:18,005 - Processing content: sample
+2025-09-27 20:22:18,005 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:22:18,172 - Processing content: This is a 
+2025-09-27 20:22:18,172 - Processing content: sample
+2025-09-27 20:22:18,172 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:22:20,682 - Processing content: This is a 
+2025-09-27 20:22:20,682 - Processing content: sample
+2025-09-27 20:22:20,682 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:22:35,925 - Processing content: This is a 
+2025-09-27 20:22:35,926 - Processing content: sample
+2025-09-27 20:22:35,926 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:22:36,828 - Processing content: This is a 
+2025-09-27 20:22:36,828 - Processing content: sample
+2025-09-27 20:22:36,828 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:23:20,970 - Processing content: This is a 
+2025-09-27 20:23:20,970 - Processing content: sample
+2025-09-27 20:23:20,970 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:23:36,547 - Processing content: This is a 
+2025-09-27 20:23:36,547 - Processing content: sample
+2025-09-27 20:23:36,547 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:23:37,713 - Processing content: This is a 
+2025-09-27 20:23:37,713 - Processing content: sample
+2025-09-27 20:23:37,713 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this to work.
+2025-09-27 20:23:39,980 - Processing content: This is a 
+2025-09-27 20:23:39,980 - Processing content: sample
+2025-09-27 20:23:39,991 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this 
+2025-09-27 20:23:39,991 - Processing content: to wor
+2025-09-27 20:23:39,991 - Processing content: k.
+2025-09-27 20:23:48,443 - Processing content: This is a 
+2025-09-27 20:23:48,443 - Processing content: sample
+2025-09-27 20:23:48,443 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this 
+2025-09-27 20:23:48,443 - Processing content: to wor
+2025-09-27 20:23:48,444 - Processing content: k.
+2025-09-27 20:28:15,320 - Processing content: This is a 
+2025-09-27 20:28:15,320 - Processing content: sample
+2025-09-27 20:28:15,320 - Processing content:  document. 
+ And i am trying out some stuff right here. I would like this 
+2025-09-27 20:28:15,320 - Processing content: to wor
+2025-09-27 20:28:15,320 - Processing content: k.
+2025-09-27 20:38:48,334 - Processing content: here. 
+2025-09-27 20:39:07,772 - Processing content: 
+2025-09-27 20:40:16,691 - Processing content: In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are invisible chains."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a subtle hypnosis, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:40:40,514 - Processing content: In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are invisible chains."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a subtle hypnosis, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:41:29,600 - Processing content: The Unseen Orde
+2025-09-27 20:41:29,601 - Processing content: r
+
+In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are 
+2025-09-27 20:41:29,601 - Processing content: invisible chain
+2025-09-27 20:41:29,601 - Processing content: s."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a subtle hypnosis, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:41:33,072 - Processing content: The Unseen Orde
+2025-09-27 20:41:33,072 - Processing content: r
+
+In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are 
+2025-09-27 20:41:33,072 - Processing content: invisible chain
+2025-09-27 20:41:33,072 - Processing content: s."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a subtle hypnosis, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:41:34,506 - Processing content: The Unseen Orde
+2025-09-27 20:41:34,506 - Processing content: r
+
+In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are 
+2025-09-27 20:41:34,506 - Processing content: invisible chain
+2025-09-27 20:41:34,507 - Processing content: s."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a subtle hypnosis, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:41:36,614 - Processing content: The Unseen Orde
+2025-09-27 20:41:36,614 - Processing content: r
+
+In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are 
+2025-09-27 20:41:36,614 - Processing content: invisible chain
+2025-09-27 20:41:36,614 - Processing content: s."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a 
+2025-09-27 20:41:36,615 - Processing content: subtle hypnosi
+2025-09-27 20:41:36,615 - Processing content: s, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:42:02,460 - Processing content: The Unseen Orde
+2025-09-27 20:42:02,460 - Processing content: r
+
+In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are 
+2025-09-27 20:42:02,460 - Processing content: invisible chain
+2025-09-27 20:42:02,460 - Processing content: s."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a 
+2025-09-27 20:42:02,460 - Processing content: subtle hypnosi
+2025-09-27 20:42:02,460 - Processing content: s, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:44:45,992 - Processing content: The Unseen Orde
+2025-09-27 20:44:45,992 - Processing content: r
+
+In the quiet hum of the modern age, whispers began to stir. A pervasive sense of unease settled upon minds, a feeling that beneath the polished veneer of daily life, something was amiss. "They tell us this is freedom," a young artist mused, sketching abstract lines that seemed to coil like suppressed thoughts. "But everywhere I look, there are 
+2025-09-27 20:44:45,993 - Processing content: invisible chain
+2025-09-27 20:44:45,993 - Processing content: s."
+
+A scholar, poring over forgotten texts, nodded gravely. "The narratives we consume, the systems we uphold... they weave a 
+2025-09-27 20:44:45,993 - Processing content: subtle hypnosi
+2025-09-27 20:44:45,993 - Processing content: s, designed to keep us orbiting predefined paths, rarely venturing into the wilderness of true, unfettered thought." A musician, his melodies mournful yet defiant, added, "Our dissent is packaged as entertainment, our questions as conspiracy. The machine absorbs our rebellion, neutering it, making it part of the spectacle."
+
+The story goes that as more people awoke to this quiet realization, the hum of the world began to change. It wasn't a revolution of fire and fury, but a slow, deliberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:47:04,752 - Processing content: The Unseen Order
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our dissent is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system that thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-27 20:47:04,752 - Processing content: iberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:47:22,971 - Processing content: The Unseen Order
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our dissent is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system that thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-27 20:47:22,971 - Processing content: iberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.
+2025-09-27 20:48:01,456 - Processing content: The Unseen Orde
+2025-09-27 20:48:01,456 - Processing content: r
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our dissent is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-27 20:48:39,109 - Processing content: The Unseen Orde
+2025-09-27 20:48:39,110 - Processing content: r
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-27 20:48:39,110 - Processing content: dissen
+2025-09-27 20:48:39,110 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.

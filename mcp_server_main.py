@@ -32,35 +32,12 @@ class MessageResponse(BaseModel):
 EDITOR_API_URL = "http://localhost:8001"
 
 
-# @mcp.tool
-# def get_document_structure() -> List[Paragraph]:
-#     """
-#     Retrieves the structured content of the entire document.
-
-#     The document is represented as a list of 'Paragraph' objects. Each 'Paragraph' has a 'content' field (the text) and boolean formatting properties (e.g., 'bold', 'italic').
-
-#     A new 'Paragraph' object is created whenever the text formatting changes. This provides a granular, structured view of the document's content and styling, which is essential for targeted editing.
-
-#     Use this tool to get an overview of the document's structure.
-#     """
-#     try:
-#         with urllib.request.urlopen(f"{EDITOR_API_URL}/document") as response:
-#             if response.status == 200:
-#                 content_data = json.loads(response.read().decode())
-#                 return content_data
-#             else:
-#                 return []
-#     except Exception as e:
-#         print(f"Error in get_document_structure: {e}")
-#         return []
-
-
 @mcp.tool
 def get_text() -> str:
     """
     Retrieves the entire document's content as a single plain text string.
 
-    This tool is useful for quickly reading the document's text without any formatting information.
+    This tool is useful for quickly reading the document's text without any formatting information. Most operations work simply by using the plain text start_index and end_index.
     """
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document/text_only") as response:
@@ -99,7 +76,7 @@ def insert_string(
     """
     Inserts a string of text into the document at a given character index.
 
-    To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' or 'get_document_structure' tool to get the precise 'index'.
+    To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' and 'get_text' tool to get the precise 'index'.
 
     Args:
         text: The string of text to insert. Can include newline characters (\n).
@@ -135,10 +112,7 @@ def switch_formatting(
     formatting_type: FormattingType,
 ) -> MessageResponse:
     """
-    Toggles a specific formatting style (e.g., bold, italic) on a segment of text within a paragraph.
-
-    This function will apply the specified formatting if it's not present, or remove it if it is already applied.
-    Applying formatting to a sub-segment of a paragraph will cause the paragraph to be split into multiple paragraphs.
+    Toggles a specific formatting style (e.g., bold, italic) on a segment of text. It is recommended to use find for the exact index and get_text for an overview.
 
     Args:
         start_index: The starting character index of the text segment to format.
@@ -206,7 +180,7 @@ def delete_substring(start_index: int, end_index: int) -> MessageResponse:
     """
     Deletes a substring from the document.
 
-    Use the 'find' or 'get_document_structure' tool to get the correct 'start_index' and 'end_index' before using this tool.
+    Use the 'find' or 'get_text' tool to get the correct 'start_index' and 'end_index' before using this tool.
     Incorrect indices may lead to unexpected behavior or errors.
 
     Args:
