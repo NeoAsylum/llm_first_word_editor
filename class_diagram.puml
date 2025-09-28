@@ -7,11 +7,10 @@ package "Gemini Client" {
     - gemini_model: str
     - client: Client
     - gemini_client: genai.Client
+    - system_prompt: str
     + _initialize_gemini_client()
     + _convert_messages_to_gemini_content()
     + _chat_with_llm()
-    + _execute_tool()
-    + run()
   }
 }
 
@@ -22,55 +21,79 @@ package "MCP Server" {
   }
 
   class "mcp_server_main" as mcp_server_main {
-    + get_document(): List[Paragraph]
-    + insert_string(): MessageResponse
-    + switch_formatting(): MessageResponse
-    + find(): FindResult
-    + delete(): MessageResponse
-    + save_document(): MessageResponse
-    + load_document(): MessageResponse
+    + get_text(): str
+    + get_html(): str
+    + insert_string(text: str, index: int): MessageResponse
+    + switch_formatting(start_index: int, end_index: int, formatting_type: FormattingType): MessageResponse
+    + find(search_term: str): FindResult
+    + delete_substring(start_index: int, end_index: int): MessageResponse
+    + save_document(filename: str): MessageResponse
+    + load_document(filename: str): MessageResponse
+    + set_margin(margin_type: MarginType, value_mm: int): MessageResponse
   }
+  
+  mcp_server_main ..> FastMCP : "uses"
 }
 
 package "Word Processor Server" {
   class FastAPI {
   }
+  
   class "word_processor_server" as word_processor_server {
     - doc: Document
-    + get_document(): List[Paragraph]
-    + get_document_html(): str
-    + find_in_body(): FindResult
-    + insert_object(): MessageResponse
-    + delete_object(): MessageResponse
-    + switch_formatting(): MessageResponse
-    + save_document(): MessageResponse
-    + load_document(): MessageResponse
+    - gemini_client: GeminiAgentClient
+    + /chat (POST)
+    + /document (GET)
+    + /document/html (GET)
+    + /document/find_in_body (POST)
+    + /document/insert_string (POST)
+    + /document/text_only (GET)
+    + /document/delete_substring (POST)
+    + /format/switch (POST)
+    + /document/save (POST)
+    + /document/load (POST)
+    + /document/set_margin (POST)
   }
+  
+  word_processor_server ..> FastAPI : "uses"
+  word_processor_server "1" *-- "1" GeminiAgentClient : "contains"
 }
 
 package "Word Processor Core" {
   class Document {
     - _content: List[Paragraph]
+    - margin_left: float
+    - margin_right: float
+    - margin_top: float
+    - margin_bottom: float
     + create_paragraph(): Paragraph
+    + get_text_only(): str
     + save()
     + load()
     + to_html(): str
-    + insert()
-    + find_in_body(): dict
+    + insert_at_index()
+    + find_in_body(): List[tuple[int, int]]
     + delete()
     + switch_formatting()
     + get_content(): List[Paragraph]
     + join_paragraphs()
+    + recalculate_start_and_end()
+    + set_margin()
   }
 
   class Paragraph {
+    + paragraph_id: int
+    + start_index: int
+    + end_index: int
     + content: str
     + bold: bool
     + italic: bool
     + lowerscript: bool
     + superscript: bool
+    + hierarchy: FormattingType
+    + delete()
     + insert()
-    + find(): List[int]
+    + switch_formatting()
     + to_html(): str
     + can_merge_with(): bool
     + merge()
@@ -79,22 +102,47 @@ package "Word Processor Core" {
   enum FormattingType {
     BOLD
     ITALIC
-    SUPERSCRIPT
     LOWERSCRIPT
+    SUPERSCRIPT
+    TITLE
+    HEADING
+    SUBHEADING
+    BODY
+  }
+  
+  enum MarginType {
+    LEFT
+    RIGHT
+    TOP
+    BOTTOM
   }
 }
 
+package "Pydantic Models" {
+    class FindResult {
+        + locations: List[tuple[int, int]]
+    }
+    class MessageResponse {
+        + message: str
+    }
+}
+
+
 ' Relationships
-GeminiAgentClient --> mcp_server_main : "uses tools via HTTP"
+GeminiAgentClient --> mcp_server_main : "uses tools via HTTP (FastMCP)"
 mcp_server_main --> word_processor_server : "forwards requests via HTTP"
 word_processor_server --> Document : "uses"
 Document "1" *-- "many" Paragraph : "contains"
-word_processor_server ..> FormattingType
-Document ..> FormattingType
-mcp_server_main ..> FormattingType
 
-mcp_server_main ..> FastMCP : "uses"
-word_processor_server ..> FastAPI : "uses"
+word_processor_server ..> FormattingType
+word_processor_server ..> MarginType
+Document ..> FormattingType
+Document ..> MarginType
+Paragraph ..> FormattingType
+mcp_server_main ..> FormattingType
+mcp_server_main ..> MarginType
+mcp_server_main ..> FindResult
+mcp_server_main ..> MessageResponse
 
 
 @enduml

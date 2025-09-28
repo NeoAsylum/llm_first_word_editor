@@ -1,11 +1,11 @@
 # LLM First Word Editor
 
-This project is a web-based word processor that is controlled by a Large Language Model (LLM) through a tool-based interface. The user can interact with the word processor by giving commands to a Gemini-based agent in natural language.
+This project is a web-based word processor that is controlled by a Large Language Model (LLM) through a tool-based interface. The user can interact with the word processor by giving commands to a Gemini-based agent in natural language through a chat interface.
 
 ## Features
 
-- Create and modify documents using natural language commands.
-- Format text with **bold**, *italic*, subscript, and superscript styles.
+- Create and modify documents using natural language commands in a chat window.
+- Format text with **bold**, *italic*, subscript, superscript, and different heading styles.
 - Set document margins (left, right, top, bottom).
 - Find and replace text.
 - Save and load documents.
@@ -25,8 +25,7 @@ This project is a web-based word processor that is controlled by a Large Languag
 ├── .vscode
 │   └── settings.json
 ├── saves
-│   ├── temp.txt
-│   └── the_unmeasured_hour.txt
+│   └── the_echo_chamber.txt
 └── word_processor
     ├── __init__.py
     ├── document.py
@@ -34,37 +33,188 @@ This project is a web-based word processor that is controlled by a Large Languag
     ├── gemini_client.py
     ├── index.html
     ├── paragraph.py
-    ├── static
-    │   ├── script.js
-    │   └── style.css
-    └── __pycache__
+    └── static
+        ├── script.js
+        └── style.css
 ```
 
 ## Architecture
 
-The project has a unique architecture that separates the document model, the rendering, and the user interface.
+The project consists of three main components: a web-based frontend, a word processor server, and a tool server for the LLM.
 
--   **Word Processor Server (`word_processor_server.py`):** A FastAPI server that manages the document's content. It exposes a REST API to create, modify, format, save, and load documents. It uses the `Document` class to represent the document in memory.
+-   **Word Processor Server (`word_processor_server.py`):** A FastAPI server that serves the web interface and manages the document's content. It exposes a REST API to create, modify, format, save, and load documents. It uses the `Document` class to represent the document in memory. This server also includes the `GeminiAgentClient`.
 
--   **Document Model (`word_processor/document.py`, `word_processor/paragraph.py`):** The document is represented by a `Document` class that contains a list of `Paragraph` objects. Each `Paragraph` has content and formatting attributes (bold, italic, etc.). This granular structure allows for fine-grained control over formatting.
+-   **Document Model (`word_processor/document.py`, `word_processor/paragraph.py`):** The document is represented by a `Document` class that contains a list of `Paragraph` objects. Each `Paragraph` has content and formatting attributes. This granular structure allows for fine-grained control over formatting.
 
 -   **MCP Server (`mcp_server_main.py`):** A `FastMCP` server that acts as a bridge between the LLM and the Word Processor Server. It exposes the Word Processor's API as tools that the LLM can use. It translates the LLM's tool calls into HTTP requests to the Word Processor Server.
 
--   **Gemini Client (`gemini_client.py`):** A command-line interface that allows the user to interact with the Gemini agent. The user's prompts are sent to the Gemini LLM (defaulting to `gemini-1.5-flash`), which then decides which tool to use to manipulate the document.
+-   **Gemini Client (`word_processor/gemini_client.py`):** This component, running within the Word Processor Server, manages the communication with the Google Gemini API. It takes the user's chat messages, sends them to the LLM, and processes the LLM's responses, including any tool calls.
 
--   **Web Interface (`word_processor/index.html`):** A simple HTML page that displays the rendered document. It fetches the document content from the Word Processor Server and renders it as HTML, updating automatically.
+-   **Web Interface (`word_processor/index.html`, `word_processor/static/`):** A single-page web application that provides a chat interface for the user to interact with the LLM and a live-rendering of the document.
+
+## Class Diagram
+```plantuml
+@startuml
+' skinparam linetype ortho
+
+package "Gemini Client" {
+  class GeminiAgentClient {
+    - server_url: str
+    - gemini_model: str
+    - client: Client
+    - gemini_client: genai.Client
+    - system_prompt: str
+    + _initialize_gemini_client()
+    + _convert_messages_to_gemini_content()
+    + _chat_with_llm()
+  }
+}
+
+package "MCP Server" {
+  class FastMCP {
+    + tool()
+    + run()
+  }
+
+  class "mcp_server_main" as mcp_server_main {
+    + get_text(): str
+    + get_html(): str
+    + insert_string(text: str, index: int): MessageResponse
+    + switch_formatting(start_index: int, end_index: int, formatting_type: FormattingType): MessageResponse
+    + find(search_term: str): FindResult
+    + delete_substring(start_index: int, end_index: int): MessageResponse
+    + save_document(filename: str): MessageResponse
+    + load_document(filename: str): MessageResponse
+    + set_margin(margin_type: MarginType, value_mm: int): MessageResponse
+  }
+  
+  mcp_server_main ..> FastMCP : "uses"
+}
+
+package "Word Processor Server" {
+  class FastAPI {
+  }
+  
+  class "word_processor_server" as word_processor_server {
+    - doc: Document
+    - gemini_client: GeminiAgentClient
+    + /chat (POST)
+    + /document (GET)
+    + /document/html (GET)
+    + /document/find_in_body (POST)
+    + /document/insert_string (POST)
+    + /document/text_only (GET)
+    + /document/delete_substring (POST)
+    + /format/switch (POST)
+    + /document/save (POST)
+    + /document/load (POST)
+    + /document/set_margin (POST)
+  }
+  
+  word_processor_server ..> FastAPI : "uses"
+  word_processor_server "1" *-- "1" GeminiAgentClient : "contains"
+}
+
+package "Word Processor Core" {
+  class Document {
+    - _content: List[Paragraph]
+    - margin_left: float
+    - margin_right: float
+    - margin_top: float
+    - margin_bottom: float
+    + create_paragraph(): Paragraph
+    + get_text_only(): str
+    + save()
+    + load()
+    + to_html(): str
+    + insert_at_index()
+    + find_in_body(): List[tuple[int, int]]
+    + delete()
+    + switch_formatting()
+    + get_content(): List[Paragraph]
+    + join_paragraphs()
+    + recalculate_start_and_end()
+    + set_margin()
+  }
+
+  class Paragraph {
+    + paragraph_id: int
+    + start_index: int
+    + end_index: int
+    + content: str
+    + bold: bool
+    + italic: bool
+    + lowerscript: bool
+    + superscript: bool
+    + hierarchy: FormattingType
+    + delete()
+    + insert()
+    + switch_formatting()
+    + to_html(): str
+    + can_merge_with(): bool
+    + merge()
+  }
+
+  enum FormattingType {
+    BOLD
+    ITALIC
+    LOWERSCRIPT
+    SUPERSCRIPT
+    TITLE
+    HEADING
+    SUBHEADING
+    BODY
+  }
+  
+  enum MarginType {
+    LEFT
+    RIGHT
+    TOP
+    BOTTOM
+  }
+}
+
+package "Pydantic Models" {
+    class FindResult {
+        + locations: List[tuple[int, int]]
+    }
+    class MessageResponse {
+        + message: str
+    }
+}
+
+
+' Relationships
+GeminiAgentClient --> mcp_server_main : "uses tools via HTTP (FastMCP)"
+mcp_server_main --> word_processor_server : "forwards requests via HTTP"
+word_processor_server --> Document : "uses"
+Document "1" *-- "many" Paragraph : "contains"
+
+word_processor_server ..> FormattingType
+word_processor_server ..> MarginType
+Document ..> FormattingType
+Document ..> MarginType
+Paragraph ..> FormattingType
+mcp_server_main ..> FormattingType
+mcp_server_main ..> MarginType
+mcp_server_main ..> FindResult
+mcp_server_main ..> MessageResponse
+
+
+@enduml
+```
 
 ## How it Works
 
-1.  **Start the servers:** Run the `starte_server_gemini.cmd` script. This will start both the Word Processor Server and the MCP Server in separate windows.
-2.  **Start the client:** Run the `gemini_client.py` script. This will open a command-line interface to interact with the Gemini agent.
-3.  **Interact with the agent:** Type commands in the Gemini Client console, for example:
+1.  **Start the servers:** Run the `starte_server_gemini.cmd` script. This will start both the Word Processor Server (on port 8001) and the MCP Server (on port 8000) in separate windows.
+2.  **Open the web interface:** Open a web browser and navigate to `http://localhost:8001/`.
+3.  **Interact with the agent:** Type commands in the chat window on the web page, for example:
     -   "insert 'Hello World' at the beginning of the document"
     -   "make the first word bold"
     -   "find the word 'sample'"
     -   "save the document as my_document.txt"
     -   "set the left margin to 20mm"
-4.  **View the document:** Open a web browser and navigate to `http://localhost:8001/` to see the live rendering of the document.
+4.  **View the document:** The document view on the right side of the page will update automatically.
 
 ## Setup
 
@@ -72,6 +222,7 @@ The project has a unique architecture that separates the document model, the ren
     ```bash
     pip install -r requirements.txt
     ```
+
 2.  **Set up Gemini API Key:**
     Create a `.env` file in the root directory and add your Gemini API key:
     ```
@@ -79,7 +230,7 @@ The project has a unique architecture that separates the document model, the ren
     ```
 3.  **Run the application:**
     -   Run `starte_server_gemini.cmd` to start the servers.
-    -   Run `gemini_client.py` to start the client.
+    -   Open `http://localhost:8001/` in your web browser.
 
 ## Available Tools
 
