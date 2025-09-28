@@ -1,9 +1,6 @@
-import asyncio
 import os
 from fastmcp import Client
 
-import json
-import sys
 from dotenv import load_dotenv
 from typing import Any, Dict, List
 import logging
@@ -31,7 +28,6 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.getLogger("fastmcp").setLevel(logging.ERROR)
 logging.getLogger("google.genai").setLevel(logging.ERROR)
 
-
 class GeminiAgentClient:
     def __init__(
         self,
@@ -43,7 +39,9 @@ class GeminiAgentClient:
         self.gemini_model = gemini_model
         self.client = Client(server_url)
         self.gemini_client = self._initialize_gemini_client()
-        self.system_prompt = system_prompt
+        self.system_prompt = "Always use get_text to gain an understanding of the document before doing anything. Always use find before any index based tool call. Alls index operations start at 0. Always use get_html before doing anything formatting related. You should often use all three get_html, find and get_text before doing anything. The user can see the document, but only interact with it by using you. After changing something you should verify the change using a tool call. ALWAYS USE FIND FOR INDEX BASED OPERATIONS, BECAUSE YOUR INDEX WILL BE OFF IF YOU DONT. DON'T DELETE OR INSERT OR SWITCH FORMAT WITHOUT FIND FIRST."
+
+
 
     def _initialize_gemini_client(self):
         api_key = os.getenv("GEMINI_API_KEY")

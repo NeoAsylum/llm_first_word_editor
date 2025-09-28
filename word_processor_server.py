@@ -26,7 +26,6 @@ async def lifespan(app: FastAPI):
     app.state.gemini_client = GeminiAgentClient(
         server_url=os.getenv("SERVER_URL", "http://localhost:8000/mcp"),
         gemini_model="gemini-2.5-flash",
-        system_prompt=os.getenv("SYSTEM_PROMPT"),
     )
     yield
     # Shutdown
