@@ -1,5 +1,6 @@
 import json
 import urllib.request
+from datetime import datetime
 from fastmcp import FastMCP
 from typing import List, Optional
 from pydantic import BaseModel
@@ -7,7 +8,13 @@ from word_processor.enums import FormattingType, MarginType
 
 # Use a single FastMCP instance
 mcp = FastMCP(name="My MCP Server")
-
+# include_tags
+# set[str] | None
+# Only expose components with at least one matching tag
+# ​
+# exclude_tags
+# set[str] | None
+# Hide components with any matching tag
 
 # --- Pydantic Models ---
 class Paragraph(BaseModel):
@@ -39,10 +46,14 @@ def get_text() -> str:
 
     This tool is useful for quickly reading the document's text without any formatting information. Most operations work simply by using the plain text start_index and end_index.
     """
+    print(f"{datetime.now()} - Calling method: get_text", flush=True)
+
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document/text_only") as response:
             if response.status == 200:
-                return response.read().decode()
+                output = response.read().decode()
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return ""
     except Exception as e:
@@ -57,10 +68,14 @@ def get_html() -> str:
 
     This tool is useful for understanding the visual layout and formatting of the document as it would appear in a web browser.
     """
+    print(f"{datetime.now()} - Calling method: get_html", flush=True)
+
     try:
         with urllib.request.urlopen(f"{EDITOR_API_URL}/document/html") as response:
             if response.status == 200:
-                return response.read().decode()
+                output = response.read().decode()
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return ""
     except Exception as e:
@@ -82,6 +97,8 @@ def insert_string(
         text: The string of text to insert. Can include newline characters (\n).
         index: The character index within the document's content where the text should be inserted.
     """
+    print(f"{datetime.now()} - Calling method: insert_string", flush=True)
+
     data = {
         "text": text,
         "index": index,
@@ -96,7 +113,9 @@ def insert_string(
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
+                output = MessageResponse(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return MessageResponse(
                     message=f"Error: Received status {response.status}"
@@ -119,6 +138,8 @@ def switch_formatting(
         end_index: The ending character index of the text segment to format.
         formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT', 'TITLE', 'HEADING', 'SUBHEADING', 'BODY'.
     """
+    print(f"{datetime.now()} - Calling method: switch_formatting", flush=True)
+
     data = {
         "start_index": start_index,
         "end_index": end_index,
@@ -134,7 +155,9 @@ def switch_formatting(
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
+                output = MessageResponse(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return MessageResponse(
                     message=f"Error: Received status {response.status}"
@@ -156,6 +179,8 @@ def find(search_term: str) -> FindResult:
     Args:
         search_term: The text to search for in the document.
     """
+    print(f"{datetime.now()} - Calling method: find", flush=True)
+
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
         data=json.dumps({"search_term": search_term}).encode(),
@@ -166,7 +191,9 @@ def find(search_term: str) -> FindResult:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return FindResult(**response_data)
+                output = FindResult(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 print(f"Error: Received status {response.status}")
                 return None
@@ -187,6 +214,8 @@ def delete_substring(start_index: int, end_index: int) -> MessageResponse:
         start_index: The starting index of the substring to delete.
         end_index: The ending index of the substring to delete. This letter also gets deleted.
     """
+    print(f"{datetime.now()} - Calling method: delete_substring", flush=True)
+
     data = {
         "start_index": start_index,
         "end_index": end_index,
@@ -201,7 +230,9 @@ def delete_substring(start_index: int, end_index: int) -> MessageResponse:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
+                output = MessageResponse(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return MessageResponse(
                     message=f"Error: Received status {response.status}"
@@ -220,6 +251,8 @@ def save_document(filename: str) -> MessageResponse:
     Args:
         filename: The name of the file to save the document as (e.g., 'my_document.txt').
     """
+    print(f"{datetime.now()} - Calling method: save_document", flush=True)
+
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/save",
         data=json.dumps({"filename": filename}).encode(),
@@ -230,7 +263,9 @@ def save_document(filename: str) -> MessageResponse:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
+                output = MessageResponse(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return MessageResponse(
                     message=f"Error: Received status {response.status}"
@@ -249,6 +284,8 @@ def load_document(filename: str) -> MessageResponse:
     Args:
         filename: The name of the file to load the document from (e.g., 'my_document.txt').
     """
+    print(f"{datetime.now()} - Calling method: load_document", flush=True)
+
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/load",
         data=json.dumps({"filename": filename}).encode(),
@@ -259,7 +296,9 @@ def load_document(filename: str) -> MessageResponse:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
+                output = MessageResponse(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return MessageResponse(
                     message=f"Error: Received status {response.status}"
@@ -277,6 +316,7 @@ def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
         margin_type: The type of margin to set. Valid options are: 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'.
         value_mm: The value of the margin in millimeters.
     """
+    print(f"{datetime.now()} - Calling method: set_margin", flush=True)
     data = {
         "margin_type": margin_type.value,
         "value_mm": value_mm,
@@ -291,7 +331,9 @@ def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
         with urllib.request.urlopen(req) as response:
             if response.status == 200:
                 response_data = json.loads(response.read().decode())
-                return MessageResponse(**response_data)
+                output = MessageResponse(**response_data)
+                print(f"Output: {output}", flush=True)
+                return output
             else:
                 return MessageResponse(
                     message=f"Error: Received status {response.status}"
@@ -301,4 +343,5 @@ def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
 
 
 if __name__ == "__main__":
+    print("Starting the MCP server now...", flush=True)
     mcp.run(transport="http", port=8000)
