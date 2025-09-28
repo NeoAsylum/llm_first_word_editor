@@ -58,7 +58,7 @@ async def increment_version():
 # Initializing with default values, then setting content using methods
 doc = Document()
 load_dotenv()
-SAVES_DIR = os.getenv("SAVES_DIR")
+SAVES_DIR = os.getenv("SAVES_DIR", "saves")
 
 doc.insert_at_index(
     "This is a sample document. \n And i am trying out some stuff right here. ", 0

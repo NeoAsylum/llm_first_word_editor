@@ -1,0 +1,12 @@
+2025-09-28 21:23:49,946 - Processing content: This is a 
+2025-09-28 21:23:49,947 - Processing content: sample 
+2025-09-28 21:23:49,947 - Processing content: document. 
+ And i am trying out some stuff right here. 
+2025-09-28 21:23:56,297 - Received session ID: d4dd07359cfa46d58773d7f3ec2321b8
+2025-09-28 21:23:56,297 - Negotiated protocol version: 2025-06-18
+2025-09-28 21:23:56,806 - AFC is enabled with max remote calls: 20.
+2025-09-28 21:24:01,150 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+2025-09-28 21:24:07,228 - Received session ID: 54c4868b03e54a93bc102946b2a6358e
+2025-09-28 21:24:07,228 - Negotiated protocol version: 2025-06-18
+2025-09-28 21:24:07,745 - AFC is enabled with max remote calls: 20.
+2025-09-28 21:24:08,576 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
