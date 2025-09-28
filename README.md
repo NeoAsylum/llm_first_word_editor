@@ -53,160 +53,14 @@ The project consists of three main components: a web-based frontend, a word proc
 -   **Web Interface (`word_processor/index.html`, `word_processor/static/`):** A single-page web application that provides a chat interface for the user to interact with the LLM and a live-rendering of the document.
 
 ## Class Diagram
-```plantuml
-@startuml
-' skinparam linetype ortho
 
-package "Gemini Client" {
-  class GeminiAgentClient {
-    - server_url: str
-    - gemini_model: str
-    - client: Client
-    - gemini_client: genai.Client
-    - system_prompt: str
-    + _initialize_gemini_client()
-    + _convert_messages_to_gemini_content()
-    + _chat_with_llm()
-  }
-}
-
-package "MCP Server" {
-  class FastMCP {
-    + tool()
-    + run()
-  }
-
-  class "mcp_server_main" as mcp_server_main {
-    + get_text(): str
-    + get_html(): str
-    + insert_string(text: str, index: int): MessageResponse
-    + switch_formatting(start_index: int, end_index: int, formatting_type: FormattingType): MessageResponse
-    + find(search_term: str): FindResult
-    + delete_substring(start_index: int, end_index: int): MessageResponse
-    + save_document(filename: str): MessageResponse
-    + load_document(filename: str): MessageResponse
-    + set_margin(margin_type: MarginType, value_mm: int): MessageResponse
-  }
-  
-  mcp_server_main ..> FastMCP : "uses"
-}
-
-package "Word Processor Server" {
-  class FastAPI {
-  }
-  
-  class "word_processor_server" as word_processor_server {
-    - doc: Document
-    - gemini_client: GeminiAgentClient
-    + /chat (POST)
-    + /document (GET)
-    + /document/html (GET)
-    + /document/find_in_body (POST)
-    + /document/insert_string (POST)
-    + /document/text_only (GET)
-    + /document/delete_substring (POST)
-    + /format/switch (POST)
-    + /document/save (POST)
-    + /document/load (POST)
-    + /document/set_margin (POST)
-  }
-  
-  word_processor_server ..> FastAPI : "uses"
-  word_processor_server "1" *-- "1" GeminiAgentClient : "contains"
-}
-
-package "Word Processor Core" {
-  class Document {
-    - _content: List[Paragraph]
-    - margin_left: float
-    - margin_right: float
-    - margin_top: float
-    - margin_bottom: float
-    + create_paragraph(): Paragraph
-    + get_text_only(): str
-    + save()
-    + load()
-    + to_html(): str
-    + insert_at_index()
-    + find_in_body(): List[tuple[int, int]]
-    + delete()
-    + switch_formatting()
-    + get_content(): List[Paragraph]
-    + join_paragraphs()
-    + recalculate_start_and_end()
-    + set_margin()
-  }
-
-  class Paragraph {
-    + paragraph_id: int
-    + start_index: int
-    + end_index: int
-    + content: str
-    + bold: bool
-    + italic: bool
-    + lowerscript: bool
-    + superscript: bool
-    + hierarchy: FormattingType
-    + delete()
-    + insert()
-    + switch_formatting()
-    + to_html(): str
-    + can_merge_with(): bool
-    + merge()
-  }
-
-  enum FormattingType {
-    BOLD
-    ITALIC
-    LOWERSCRIPT
-    SUPERSCRIPT
-    TITLE
-    HEADING
-    SUBHEADING
-    BODY
-  }
-  
-  enum MarginType {
-    LEFT
-    RIGHT
-    TOP
-    BOTTOM
-  }
-}
-
-package "Pydantic Models" {
-    class FindResult {
-        + locations: List[tuple[int, int]]
-    }
-    class MessageResponse {
-        + message: str
-    }
-}
-
-
-' Relationships
-GeminiAgentClient --> mcp_server_main : "uses tools via HTTP (FastMCP)"
-mcp_server_main --> word_processor_server : "forwards requests via HTTP"
-word_processor_server --> Document : "uses"
-Document "1" *-- "many" Paragraph : "contains"
-
-word_processor_server ..> FormattingType
-word_processor_server ..> MarginType
-Document ..> FormattingType
-Document ..> MarginType
-Paragraph ..> FormattingType
-mcp_server_main ..> FormattingType
-mcp_server_main ..> MarginType
-mcp_server_main ..> FindResult
-mcp_server_main ..> MessageResponse
-
-
-@enduml
-```
+![Class Diagram](./assets/class_diagram.png)
 
 ## How it Works
 
-1.  **Start the servers:** Run the `starte_server_gemini.cmd` script. This will start both the Word Processor Server (on port 8001) and the MCP Server (on port 8000) in separate windows.
+1.  **Start the servers:** 
+    -   Run `starte_server_gemini.cmd` to start the MCP Server (on port 8000).
+    -   Run `python word_processor_server.py` to start the Word Processor Server (on port 8001).
 2.  **Open the web interface:** Open a web browser and navigate to `http://localhost:8001/`.
 3.  **Interact with the agent:** Type commands in the chat window on the web page, for example:
     -   "insert 'Hello World' at the beginning of the document"
@@ -229,7 +83,8 @@ mcp_server_main ..> MessageResponse
     GEMINI_API_KEY=your_api_key
     ```
 3.  **Run the application:**
-    -   Run `starte_server_gemini.cmd` to start the servers.
+    -   Run `starte_server_gemini.cmd` to start the MCP server.
+    -   Run `python word_processor_server.py` to start the Word Processor server.
     -   Open `http://localhost:8001/` in your web browser.
 
 ## Available Tools
