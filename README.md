@@ -11,6 +11,24 @@ This project is a web-based word processor that is controlled by a Large Languag
 - Save and load documents.
 - Live rendering of the document in a web browser.
 
+## Future Features
+
+- Voice Control/Voice Input
+- Handling of Images and Tables
+- Text Size, Text Color and Text Spacing
+- Better Line Breaks
+- A visually appealing UI
+- User Accounts and webhosting
+- PDF exports
+- Page breaks
+- Default shapes
+- Footer and header handling
+- Page numbers
+- Multiple pages
+- Columns
+- Selection of sizes (a5, a4, a3 and so on)
+- Lists
+
 ## Project Structure
 
 ```
