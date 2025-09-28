@@ -35,7 +35,7 @@ class Document(BaseModel):
         os.makedirs(saves_dir, exist_ok=True)
         file_path = os.path.join(saves_dir, filename)
         with open(file_path, "w") as f:
-            json.dump([word.model_dump() for word in self._content], f, indent=4)
+            json.dump([paragraph.model_dump() for paragraph in self._content], f, indent=4)
 
     def load(self, filename: str, saves_dir: str):
         file_path = os.path.join(saves_dir, filename)

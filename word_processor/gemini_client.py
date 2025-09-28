@@ -125,7 +125,11 @@ class GeminiAgentClient:
                     model=self.gemini_model,
                     contents=gemini_contents,
                     config=types.GenerateContentConfig(
-                        tools=[self.client.session], system_instruction=self.system_prompt
+                        tools=[self.client.session],
+                        automatic_function_calling=types.AutomaticFunctionCallingConfig(
+                            maximum_remote_calls=20
+                        ),
+                        system_instruction=self.system_prompt,
                     ),
                 )
                 full_response_content = response.text

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from typing import Optional, List
 import html
 import re
@@ -21,6 +21,10 @@ class Paragraph(BaseModel):
     superscript: bool = False
     hierarchy: FormattingType = FormattingType.BODY
 
+    @field_serializer('hierarchy')
+    def serialize_hierarchy(self, hierarchy: FormattingType, _info):
+        return hierarchy.value
+
     def delete(self, start_index: int, end_index: int):
         self.content = self.content[:start_index] + self.content[end_index:]
 
@@ -37,7 +41,7 @@ class Paragraph(BaseModel):
         elif formatting_type == FormattingType.SUPERSCRIPT.value:
             self.superscript = not self.superscript
         else:
-            self.hierarchy = formatting_type
+            self.hierarchy = FormattingType(formatting_type)
 
     def to_html(self) -> str:
         logging.info(f"Processing content: {self.content}")
@@ -52,11 +56,11 @@ class Paragraph(BaseModel):
         if self.superscript:
             text = f"<sup>{text}</sup>"
 
-        if self.hierarchy == FormattingType.TITLE.value:
+        if self.hierarchy == FormattingType.TITLE:
             text = f"<h1>{text}</h1>"
-        elif self.hierarchy == FormattingType.HEADING.value:
+        elif self.hierarchy == FormattingType.HEADING:
             text = f"<h2>{text}</h2>"
-        elif self.hierarchy == FormattingType.SUBHEADING.value:
+        elif self.hierarchy == FormattingType.SUBHEADING:
             text = f"<h3>{text}</h3>"
         return text
 

@@ -16,6 +16,7 @@ mcp = FastMCP(name="My MCP Server")
 # set[str] | None
 # Hide components with any matching tag
 
+
 # --- Pydantic Models ---
 class Paragraph(BaseModel):
     start_index: int
@@ -91,14 +92,17 @@ def insert_string(
     """
     Inserts a string of text into the document at a given character index.
     Always use get_text first and find to get the exact index.
-
+    Insert \n for newline.
     To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' and 'get_text' tool to get the precise 'index'.
 
     Args:
         text: The string of text to insert. Can include newline characters (\n).
         index: The character index within the document's content where the text should be inserted.
     """
-    print(f"{datetime.now()} - Calling method: insert_string with parameters text: {text}, index: {index}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: insert_string with parameters text: {text}, index: {index}",
+        flush=True,
+    )
 
     data = {
         "text": text,
@@ -139,7 +143,10 @@ def switch_formatting(
         end_index: The ending character index of the text segment to format. This letter also gets formatted.
         formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT', 'TITLE', 'HEADING', 'SUBHEADING', 'BODY'.
     """
-    print(f"{datetime.now()} - Calling method: switch_formatting with parameters start_index: {start_index}, end_index: {end_index}, formatting_type: {formatting_type}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: switch_formatting with parameters start_index: {start_index}, end_index: {end_index}, formatting_type: {formatting_type}",
+        flush=True,
+    )
 
     data = {
         "start_index": start_index,
@@ -180,7 +187,10 @@ def find(search_term: str) -> FindResult:
     Args:
         search_term: The text to search for in the document.
     """
-    print(f"{datetime.now()} - Calling method: find with parameters search_term: {search_term}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: find with parameters search_term: {search_term}",
+        flush=True,
+    )
 
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
@@ -215,7 +225,10 @@ def delete_substring(start_index: int, end_index: int) -> MessageResponse:
         start_index: The starting index of the substring to delete.
         end_index: The ending index of the substring to delete. This letter also gets deleted.
     """
-    print(f"{datetime.now()} - Calling method: delete_substring with parameters start_index: {start_index}, end_index: {end_index}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: delete_substring with parameters start_index: {start_index}, end_index: {end_index}",
+        flush=True,
+    )
 
     data = {
         "start_index": start_index,
@@ -252,7 +265,10 @@ def save_document(filename: str) -> MessageResponse:
     Args:
         filename: The name of the file to save the document as (e.g., 'my_document.txt').
     """
-    print(f"{datetime.now()} - Calling method: save_document with parameters filename: {filename}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: save_document with parameters filename: {filename}",
+        flush=True,
+    )
 
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/save",
@@ -285,7 +301,10 @@ def load_document(filename: str) -> MessageResponse:
     Args:
         filename: The name of the file to load the document from (e.g., 'my_document.txt').
     """
-    print(f"{datetime.now()} - Calling method: load_document with parameters filename: {filename}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: load_document with parameters filename: {filename}",
+        flush=True,
+    )
 
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/load",
@@ -317,7 +336,10 @@ def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
         margin_type: The type of margin to set. Valid options are: 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'.
         value_mm: The value of the margin in millimeters.
     """
-    print(f"{datetime.now()} - Calling method: set_margin with parameters margin_type: {margin_type}, value_mm: {value_mm}", flush=True)
+    print(
+        f"{datetime.now()} - Calling method: set_margin with parameters margin_type: {margin_type}, value_mm: {value_mm}",
+        flush=True,
+    )
     data = {
         "margin_type": margin_type.value,
         "value_mm": value_mm,

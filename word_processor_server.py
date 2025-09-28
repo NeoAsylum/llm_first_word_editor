@@ -1,5 +1,6 @@
 import sys
 from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from pydantic import BaseModel
@@ -15,7 +16,24 @@ from word_processor.gemini_client import GeminiAgentClient
 
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+    app.state.gemini_client = GeminiAgentClient(
+        server_url=os.getenv("SERVER_URL", "http://localhost:8000/mcp"),
+        gemini_model="gemini-2.5-flash",
+        system_prompt=os.getenv("SYSTEM_PROMPT"),
+    )
+    yield
+    # Shutdown
+    pass
+
+
+app = FastAPI(lifespan=lifespan)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 static_files_dir = os.path.join(script_dir, "word_processor", "static")
@@ -29,11 +47,14 @@ index_html_path = os.path.join(
 document_version = 0
 version_condition = asyncio.Condition()
 
+
 async def increment_version():
     global document_version
     async with version_condition:
         document_version += 1
         version_condition.notify_all()
+
+
 # Global document instance
 # Initializing with default values, then setting content using methods
 doc = Document()
@@ -174,9 +195,7 @@ async def switch_formatting(req: SwitchFormattingRequest):
         f"Tool call: switch_formatting for start_index={req.start_index}, end_index={req.end_index}, type={req.formatting_type.value}"
     )
     try:
-        doc.switch_formatting(
-            req.start_index + 1, req.end_index + 1, req.formatting_type
-        )
+        doc.switch_formatting(req.start_index, req.end_index, req.formatting_type)
         await increment_version()
         return MessageResponse(
             message=f"Formatting {req.formatting_type.value} switched for selection from index {req.start_index} to {req.end_index}."
@@ -233,18 +252,6 @@ async def wait_for_change(client_version: int):
             return {"version": document_version}
         await version_condition.wait()
         return {"version": document_version}
-
-
-@app.on_event("startup")
-async def startup_event():
-    if sys.platform == "win32":
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-    app.state.gemini_client = GeminiAgentClient(
-        server_url=os.getenv("SERVER_URL", "http://localhost:8000/mcp"),
-        gemini_model="gemini-2.5-flash",
-        system_prompt=os.getenv("SYSTEM_PROMPT"),
-    )
 
 
 if __name__ == "__main__":

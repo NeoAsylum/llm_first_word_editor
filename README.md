@@ -16,22 +16,27 @@ This project is a web-based word processor that is controlled by a Large Languag
 ```
 ├── .gitignore
 ├── class_diagram.puml
-├── gemini_client.py
 ├── logfile.txt
 ├── mcp_server_main.py
 ├── paragraph_log.txt
 ├── README.md
 ├── starte_server_gemini.cmd
 ├── word_processor_server.py
+├── .vscode
+│   └── settings.json
 ├── saves
-│   ├── Barnaby.txt
-│   └── document_test.txt
+│   ├── temp.txt
+│   └── the_unmeasured_hour.txt
 └── word_processor
     ├── __init__.py
     ├── document.py
     ├── enums.py
+    ├── gemini_client.py
     ├── index.html
     ├── paragraph.py
+    ├── static
+    │   ├── script.js
+    │   └── style.css
     └── __pycache__
 ```
 
@@ -80,11 +85,12 @@ The project has a unique architecture that separates the document model, the ren
 
 The following tools are available for the LLM to use:
 
--   `get_document()`: Retrieves the entire document's content.
--   `insert_string(text: str, paragraph_index: int, string_index: int)`: Inserts a string of text into a specific paragraph at a given index.
--   `switch_formatting(paragraph_index: int, index: int, length: int, formatting_type: FormattingType)`: Toggles a specific formatting style (e.g., bold, italic) on a segment of text.
--   `find(search_term: str)`: Searches the entire document for a given search term.
--   `delete_substring(paragraph_index: int, string_index: int, length: int)`: Deletes a substring from a paragraph.
--   `save_document(filename: str)`: Saves the current state of the document to a file.
--   `load_document(filename: str)`: Loads a document from a file.
--   `set_margin(margin_type: MarginType, value_mm: int)`: Sets a specific margin for the document.
+-   `get_text() -> str`: Retrieves the entire document's content as a single plain text string.
+-   `get_html() -> str`: Retrieves the HTML representation of the document.
+-   `insert_string(text: str, index: int) -> MessageResponse`: Inserts a string of text into the document at a given character index.
+-   `switch_formatting(start_index: int, end_index: int, formatting_type: FormattingType) -> MessageResponse`: Toggles a specific formatting style on a segment of text.
+-   `find(search_term: str) -> FindResult`: Searches the entire document for a given search term and returns all occurrences.
+-   `delete_substring(start_index: int, end_index: int) -> MessageResponse`: Deletes a substring from the document.
+-   `save_document(filename: str) -> MessageResponse`: Saves the current state of the document to a file.
+-   `load_document(filename: str) -> MessageResponse`: Loads a document from a file.
+-   `set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse`: Sets a specific margin for the document.
