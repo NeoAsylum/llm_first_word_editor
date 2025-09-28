@@ -39,7 +39,6 @@
             chatHistory.push(data.message);
 
             appendMessage('assistant', data.message.content);
-            await refreshDocument();
         }
 
         function appendMessage(role, content) {
@@ -56,4 +55,31 @@
             }
         });
 
-        window.onload = refreshDocument;
+        let currentVersion = 0;
+
+        async function pollForChanges() {
+            try {
+                const response = await fetch(`/document/wait-for-change/${currentVersion}`);
+                if (response.status === 200) {
+                    const data = await response.json();
+                    if (data.version > currentVersion) {
+                        currentVersion = data.version;
+                        await refreshDocument();
+                    }
+                }
+            } catch (e) {
+                console.error("Polling error:", e);
+                // Add a delay before retrying to avoid spamming the server in case of errors
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            // Use requestAnimationFrame to avoid tight loop in case of immediate responses
+            requestAnimationFrame(pollForChanges);
+        }
+
+        window.onload = async () => {
+            const response = await fetch('/document/version');
+            const data = await response.json();
+            currentVersion = data.version;
+            await refreshDocument();
+            pollForChanges();
+        };

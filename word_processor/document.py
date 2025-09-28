@@ -36,7 +36,6 @@ class Document(BaseModel):
         file_path = os.path.join(saves_dir, filename)
         with open(file_path, "w") as f:
             json.dump([word.model_dump() for word in self._content], f, indent=4)
-        self.join_paragraphs()
 
     def load(self, filename: str, saves_dir: str):
         file_path = os.path.join(saves_dir, filename)
@@ -45,7 +44,6 @@ class Document(BaseModel):
         with open(file_path, "r") as f:
             loaded_content = json.load(f)
             self._content = [Paragraph(**item) for item in loaded_content]
-        self.join_paragraphs()
 
     def to_html(self) -> str:
         html_parts = []
@@ -55,8 +53,6 @@ class Document(BaseModel):
             main_content = "".join(so.to_html() for so in self._content)
             style = f"padding-top: {self.margin_top}cm; padding-bottom: {self.margin_bottom}cm; padding-left: {self.margin_left}cm; padding-right: {self.margin_right}cm;"
             html_parts.append(f'<main style="{style}">{main_content}</main>')
-
-        self.join_paragraphs()
 
         return "\n".join(html_parts)
 
@@ -186,6 +182,7 @@ class Document(BaseModel):
             hierarchy=p.hierarchy,
         )
         if p_start.content != "":
+            index += 1
             self._content.insert(index, p_start)
         p_end = self.create_paragraph(
             content=p.content[len(p.content) - max(p.end_index - end_index, 0) :],
@@ -196,7 +193,7 @@ class Document(BaseModel):
             hierarchy=p.hierarchy,
         )
         if p_end.content != "":
-            self._content.insert(index + 2, p_end)
+            self._content.insert(index + 1, p_end)
         p.content = p.content[
             max(start_index - p.start_index, 0) : len(p.content)
             - max(p.end_index - end_index, 0)

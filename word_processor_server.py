@@ -17,6 +17,17 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
+document_version = 0
+version_condition = asyncio.Condition()
+
+
+async def increment_version():
+    global document_version
+    async with version_condition:
+        document_version += 1
+        version_condition.notify_all()
+
+
 app.mount("/static", StaticFiles(directory="word_processor/static"), name="static")
 
 # Global document instance
@@ -25,8 +36,10 @@ doc = Document()
 load_dotenv()
 SAVES_DIR = os.getenv("SAVES_DIR")
 
-doc.insert_at_index("This is a sample document. \n And i am trying out some stuff right here. ", 0)
-doc.switch_formatting(start_index=10, end_index=17, formatting_type=FormattingType.BOLD)
+doc.insert_at_index(
+    "This is a sample document. \n And i am trying out some stuff right here. ", 0
+)
+doc.switch_formatting(start_index=10, end_index=16, formatting_type=FormattingType.BOLD)
 
 # --- Request Models ---
 
@@ -73,13 +86,13 @@ class DeleteRequest(BaseModel):
     start_index: int
     end_index: int
 
+
 class ChatRequest(BaseModel):
     message: str
     history: List[Dict[str, Any]]
 
 
 # --- Response Models ---
-
 
 
 class MessageResponse(BaseModel):
@@ -100,6 +113,7 @@ def read_root():
     print("Tool call: read_root")
     return FileResponse(index_html_path)
 
+
 # --- Chat Endpoint ---
 @app.post("/chat")
 async def chat(req: ChatRequest):
@@ -107,6 +121,7 @@ async def chat(req: ChatRequest):
     messages.append({"role": "user", "content": req.message})
     response = await app.state.gemini_client._chat_with_llm(messages)
     return response
+
 
 # --- Document level endpoints ---
 
@@ -131,12 +146,11 @@ def find_in_body(req: FindRequest) -> FindResult:
 
 
 @app.post("/document/insert_string", response_model=MessageResponse)
-def insert_object(req: InsertStringRequest) -> MessageResponse:
+async def insert_object(req: InsertStringRequest) -> MessageResponse:
     try:
         doc.insert_at_index(req.text, req.index)
-        return MessageResponse(
-            message=f"Text inserted at index {req.index}."
-        )
+        await increment_version()
+        return MessageResponse(message=f"Text inserted at index {req.index}.")
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -150,23 +164,25 @@ def get_text_only() -> str:
 
 
 @app.post("/document/delete_substring", response_model=MessageResponse)
-def delete_substring(req: DeleteRequest):
+async def delete_substring(req: DeleteRequest):
     try:
         doc.delete(req.start_index, req.end_index)
+        await increment_version()
         return MessageResponse(message="Substring deleted.")
     except IndexError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.post("/format/switch", response_model=MessageResponse)
-def switch_formatting(req: SwitchFormattingRequest):
+async def switch_formatting(req: SwitchFormattingRequest):
     print(
         f"Tool call: switch_formatting for start_index={req.start_index}, end_index={req.end_index}, type={req.formatting_type.value}"
     )
     try:
         doc.switch_formatting(
-            req.start_index, req.end_index, req.formatting_type
+            req.start_index + 1, req.end_index + 1, req.formatting_type
         )
+        await increment_version()
         return MessageResponse(
             message=f"Formatting {req.formatting_type.value} switched for selection from index {req.start_index} to {req.end_index}."
         )
@@ -175,20 +191,22 @@ def switch_formatting(req: SwitchFormattingRequest):
 
 
 @app.post("/document/save", response_model=MessageResponse)
-def save_document(req: SaveRequest):
+async def save_document(req: SaveRequest):
     print(f"Tool call: save_document with filename='{req.filename}'")
     try:
         doc.save(req.filename, SAVES_DIR)
+        await increment_version()
         return MessageResponse(message=f"Document saved to {req.filename}.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/document/load", response_model=MessageResponse)
-def load_document(req: LoadRequest):
+async def load_document(req: LoadRequest):
     print(f"Tool call: load_document with filename='{req.filename}'")
     try:
         doc.load(req.filename, SAVES_DIR)
+        await increment_version()
         return MessageResponse(message=f"Document loaded from {req.filename}.")
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -197,24 +215,40 @@ def load_document(req: LoadRequest):
 
 
 @app.post("/document/set_margin", response_model=MessageResponse)
-def set_margin(req: SetMarginRequest):
+async def set_margin(req: SetMarginRequest):
     try:
         doc.set_margin(req.margin_type, req.value_mm)
+        await increment_version()
         return MessageResponse(
             message=f"Margin {req.margin_type.value} set to {req.value_mm}mm."
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.get("/document/version")
+async def get_document_version():
+    return {"version": document_version}
+
+
+@app.get("/document/wait-for-change/{client_version}")
+async def wait_for_change(client_version: int):
+    async with version_condition:
+        if client_version < document_version:
+            return {"version": document_version}
+        await version_condition.wait()
+        return {"version": document_version}
+
+
 @app.on_event("startup")
 async def startup_event():
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
+
     app.state.gemini_client = GeminiAgentClient(
         server_url=os.getenv("SERVER_URL", "http://localhost:8000/mcp"),
         gemini_model="gemini-2.5-flash",
-        system_prompt="You are a helpful assistant. You are the user interface to a word style document editor. You have access to multiple model context protocol tools via a mcp server that allow you to do the users bidding and edit this document. The user can see the document in real time, but can only interact with it through you. He can also not see the tool output, so you have to show him the return values of the tools you call. Always use get_text initially to understand file content. Use get_html to understand file structure. Also, when the user asks you for something use your tools to fullfill his request. Don't ask him for additional information. Get the information yourself using the tools provided."
+        system_prompt=os.getenv("SYSTEM_PROMPT"),
     )
 
 

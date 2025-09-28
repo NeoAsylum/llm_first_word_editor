@@ -90,6 +90,7 @@ def insert_string(
 ) -> MessageResponse:
     """
     Inserts a string of text into the document at a given character index.
+    Always use get_text first and find to get the exact index.
 
     To ensure text is inserted at the correct location, it is highly recommended to first use the 'find' and 'get_text' tool to get the precise 'index'.
 
@@ -97,7 +98,7 @@ def insert_string(
         text: The string of text to insert. Can include newline characters (\n).
         index: The character index within the document's content where the text should be inserted.
     """
-    print(f"{datetime.now()} - Calling method: insert_string", flush=True)
+    print(f"{datetime.now()} - Calling method: insert_string with parameters text: {text}, index: {index}", flush=True)
 
     data = {
         "text": text,
@@ -132,13 +133,13 @@ def switch_formatting(
 ) -> MessageResponse:
     """
     Toggles a specific formatting style (e.g., bold, italic) on a segment of text. It is recommended to use find for the exact index and get_text for an overview.
-
+    Always use get_text first.
     Args:
         start_index: The starting character index of the text segment to format.
-        end_index: The ending character index of the text segment to format.
+        end_index: The ending character index of the text segment to format. This letter also gets formatted.
         formatting_type: The type of formatting to toggle. Valid options are: 'BOLD', 'ITALIC', 'LOWERSCRIPT', 'SUPERSCRIPT', 'TITLE', 'HEADING', 'SUBHEADING', 'BODY'.
     """
-    print(f"{datetime.now()} - Calling method: switch_formatting", flush=True)
+    print(f"{datetime.now()} - Calling method: switch_formatting with parameters start_index: {start_index}, end_index: {end_index}, formatting_type: {formatting_type}", flush=True)
 
     data = {
         "start_index": start_index,
@@ -179,7 +180,7 @@ def find(search_term: str) -> FindResult:
     Args:
         search_term: The text to search for in the document.
     """
-    print(f"{datetime.now()} - Calling method: find", flush=True)
+    print(f"{datetime.now()} - Calling method: find with parameters search_term: {search_term}", flush=True)
 
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/find_in_body",
@@ -206,7 +207,7 @@ def find(search_term: str) -> FindResult:
 def delete_substring(start_index: int, end_index: int) -> MessageResponse:
     """
     Deletes a substring from the document.
-
+    Always use get_text first and find to get the exact index.
     Use the 'find' or 'get_text' tool to get the correct 'start_index' and 'end_index' before using this tool.
     Incorrect indices may lead to unexpected behavior or errors.
 
@@ -214,7 +215,7 @@ def delete_substring(start_index: int, end_index: int) -> MessageResponse:
         start_index: The starting index of the substring to delete.
         end_index: The ending index of the substring to delete. This letter also gets deleted.
     """
-    print(f"{datetime.now()} - Calling method: delete_substring", flush=True)
+    print(f"{datetime.now()} - Calling method: delete_substring with parameters start_index: {start_index}, end_index: {end_index}", flush=True)
 
     data = {
         "start_index": start_index,
@@ -251,7 +252,7 @@ def save_document(filename: str) -> MessageResponse:
     Args:
         filename: The name of the file to save the document as (e.g., 'my_document.txt').
     """
-    print(f"{datetime.now()} - Calling method: save_document", flush=True)
+    print(f"{datetime.now()} - Calling method: save_document with parameters filename: {filename}", flush=True)
 
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/save",
@@ -284,7 +285,7 @@ def load_document(filename: str) -> MessageResponse:
     Args:
         filename: The name of the file to load the document from (e.g., 'my_document.txt').
     """
-    print(f"{datetime.now()} - Calling method: load_document", flush=True)
+    print(f"{datetime.now()} - Calling method: load_document with parameters filename: {filename}", flush=True)
 
     req = urllib.request.Request(
         f"{EDITOR_API_URL}/document/load",
@@ -316,7 +317,7 @@ def set_margin(margin_type: MarginType, value_mm: int) -> MessageResponse:
         margin_type: The type of margin to set. Valid options are: 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'.
         value_mm: The value of the margin in millimeters.
     """
-    print(f"{datetime.now()} - Calling method: set_margin", flush=True)
+    print(f"{datetime.now()} - Calling method: set_margin with parameters margin_type: {margin_type}, value_mm: {value_mm}", flush=True)
     data = {
         "margin_type": margin_type.value,
         "value_mm": value_mm,
