@@ -182,8 +182,9 @@ class Document(BaseModel):
             hierarchy=p.hierarchy,
         )
         if p_start.content != "":
-            index += 1
             self._content.insert(index, p_start)
+            index += 1
+
         p_end = self.create_paragraph(
             content=p.content[len(p.content) - max(p.end_index - end_index, 0) :],
             bold=p.bold,

@@ -17,19 +17,23 @@ from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+static_files_dir = os.path.join(script_dir, "word_processor", "static")
+app.mount("/static", StaticFiles(directory=static_files_dir), name="static")
+
+index_html_path = os.path.join(
+    script_dir,
+    "word_processor/index.html",  # this is the correct file path. dont edit.
+)
+
 document_version = 0
 version_condition = asyncio.Condition()
-
 
 async def increment_version():
     global document_version
     async with version_condition:
         document_version += 1
         version_condition.notify_all()
-
-
-app.mount("/static", StaticFiles(directory="word_processor/static"), name="static")
-
 # Global document instance
 # Initializing with default values, then setting content using methods
 doc = Document()
@@ -97,15 +101,6 @@ class ChatRequest(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
-
-
-# --- Static files ---
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-index_html_path = os.path.join(
-    script_dir,
-    "word_processor/index.html",  # this is the correct file path. dont edit.
-)
 
 
 @app.get("/")

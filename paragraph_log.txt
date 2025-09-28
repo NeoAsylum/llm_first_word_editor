@@ -4155,3 +4155,234 @@ A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narrati
 2025-09-28 18:31:48,128 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
 
 And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:37:32,444 - Processing content: sample 
+2025-09-28 18:37:32,445 - Processing content: This is a document. 
+ And i am trying out some stuff right here. 
+2025-09-28 18:40:15,225 - Processing content: sample 
+2025-09-28 18:40:15,226 - Processing content: This is a document. 
+ And i am trying out some stuff right here. 
+2025-09-28 18:40:45,059 - An unexpected error occurred: Client failed to connect: All connection attempts failed
+Traceback (most recent call last):
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\fastmcp\client\client.py", line 481, in _session_runner
+    await stack.enter_async_context(self._context_manager())
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 659, in enter_async_context
+    result = await _enter(cm)
+             ^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\fastmcp\client\client.py", line 353, in _context_manager
+    with catch(get_catch_handlers()):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\exceptiongroup\_catch.py", line 39, in __exit__
+    raise unhandled from exc.__cause__
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\exceptiongroup\_catch.py", line 65, in handle_exception
+    result = handler(matched)
+             ^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\fastmcp\utilities\exceptions.py", line 29, in _exception_handler
+    raise leaf
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\mcp\client\streamable_http.py", line 407, in handle_request_async
+    await self._handle_post_request(ctx)
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\mcp\client\streamable_http.py", line 260, in _handle_post_request
+    async with ctx.client.stream(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_client.py", line 1583, in stream
+    response = await self.send(
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_transports\default.py", line 393, in handle_async_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: All connection attempts failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\adria\Downloads\llm_first_word_editor\word_processor\gemini_client.py", line 123, in _chat_with_llm
+    async with self.client:
+               ^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\fastmcp\client\client.py", line 374, in __aenter__
+    return await self._connect()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adria\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\fastmcp\client\client.py", line 419, in _connect
+    raise RuntimeError(
+RuntimeError: Client failed to connect: All connection attempts failed
+2025-09-28 18:40:55,573 - Processing content: sample 
+2025-09-28 18:40:55,573 - Processing content: This is a document. 
+ And i am trying out some stuff right here. 
+2025-09-28 18:41:16,421 - Received session ID: af4882433f0a467cb4479f8dbebbfa56
+2025-09-28 18:41:16,422 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:41:16,963 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:41:20,763 - Processing content: The Unseen Orde
+2025-09-28 18:41:20,763 - Processing content: r
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:41:20,763 - Processing content: dissen
+2025-09-28 18:41:20,763 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:41:51,356 - Received session ID: 85bfadd70158433f8330c004e9b911f8
+2025-09-28 18:41:51,357 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:41:51,898 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:42:01,265 - Processing content: e
+2025-09-28 18:42:01,265 - Processing content: The Unseen Ord
+2025-09-28 18:42:01,265 - Processing content: r
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:42:01,265 - Processing content: dissen
+2025-09-28 18:42:01,266 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchanged. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:42:02,427 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+2025-09-28 18:42:35,611 - Received session ID: 06785d123afd4ba9a60a34a39e3f88aa
+2025-09-28 18:42:35,611 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:42:36,153 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:42:42,565 - Processing content: e
+2025-09-28 18:42:42,565 - Processing content: The Unseen Ord
+2025-09-28 18:42:42,565 - Processing content: r
+
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:42:42,565 - Processing content: dissen
+2025-09-28 18:42:42,565 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:42:43,199 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+2025-09-28 18:42:51,608 - Received session ID: 25df490e06644017bb32ae7860d29af9
+2025-09-28 18:42:51,609 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:42:52,150 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:43:03,482 - Processing content: e
+2025-09-28 18:43:03,482 - Processing content: The Unseen Ord
+2025-09-28 18:43:03,482 - Processing content: r
+
+2025-09-28 18:43:03,482 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:43:03,482 - Processing content: dissen
+2025-09-28 18:43:03,482 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:43:04,245 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+2025-09-28 18:43:12,935 - Received session ID: 57460dcb2ffa4dd8a4a284f5b307df41
+2025-09-28 18:43:12,935 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:43:13,477 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:43:14,281 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+2025-09-28 18:43:22,030 - Received session ID: 36945ad027fe4a258864a1cba15c177f
+2025-09-28 18:43:22,031 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:43:22,557 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:43:29,365 - Processing content: e
+2025-09-28 18:43:29,365 - Processing content: The Unseen Ord
+2025-09-28 18:43:29,365 - Processing content: r
+
+2025-09-28 18:43:29,366 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:43:29,366 - Processing content: dissen
+2025-09-28 18:43:29,366 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:43:31,657 - Processing content: e
+2025-09-28 18:43:31,659 - Processing content: The Unseen Ord
+2025-09-28 18:43:31,659 - Processing content: r
+
+2025-09-28 18:43:31,660 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:43:31,660 - Processing content: dissen
+2025-09-28 18:43:31,661 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:43:33,954 - Processing content: e
+2025-09-28 18:43:33,954 - Processing content: The Unseen Ord
+2025-09-28 18:43:33,955 - Processing content: r
+
+2025-09-28 18:43:33,955 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:43:33,956 - Processing content: dissen
+2025-09-28 18:43:33,956 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:43:36,257 - Processing content: e
+2025-09-28 18:43:36,258 - Processing content: The Unseen Ord
+2025-09-28 18:43:36,258 - Processing content: r
+
+2025-09-28 18:43:36,258 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:43:36,259 - Processing content: dissen
+2025-09-28 18:43:36,260 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:44:34,977 - Received session ID: 0093cf3ac26748fab03b8b3fab775a8d
+2025-09-28 18:44:34,977 - Negotiated protocol version: 2025-06-18
+2025-09-28 18:44:35,489 - AFC is enabled with max remote calls: 10.
+2025-09-28 18:44:39,006 - Processing content: e
+2025-09-28 18:44:39,006 - Processing content: The Unseen Ord
+2025-09-28 18:44:39,006 - Processing content: r
+
+2025-09-28 18:44:39,006 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:44:39,006 - Processing content: dissen
+2025-09-28 18:44:39,006 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
+2025-09-28 18:44:42,456 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+2025-09-28 18:48:09,764 - Processing content: e
+2025-09-28 18:48:09,765 - Processing content: The Unseen Ord
+2025-09-28 18:48:09,765 - Processing content: r
+
+2025-09-28 18:48:09,765 - Processing content: 
+In the ceaseless hum of the modern age, a chilling silence permeated minds. A pervasive sense of dread settled upon souls, a knowing that beneath the gilded facade of daily life, an iron fist clenched. "They tell us this is freedom," a young artist whispered, his sketches now fractured, depicting figures consumed by an unseen force. "But everywhere I look, the chains are visible, and unbreakable."
+
+A scholar, hunched over forbidden texts, his eyes hollow, murmured, "The narratives we consume, the systems we enforce... they are a masterwork of psychological subjugation, meticulously crafted to ensure we never stray from our predetermined cages, to extinguish the very flicker of true, unfettered thought." A musician, his melodies now discordant wails of despair, added, "Our 
+2025-09-28 18:48:09,765 - Processing content: dissen
+2025-09-28 18:48:09,765 - Processing content: t is not merely packaged; it is absorbed, digested, and then regurgitated as a twisted affirmation of their control. Our questions are heresy, our rebellion a fleeting tremor in a system thiberate unwinding of the mind, a quiet reclaiming of the self, one free thought at a time.at thrives on our very despair."
+
+And so, the story goes, the hum of the world remained unchange
+
+Yet, whispers of defiance began to stir in the hidden corners of society. A new generation, unburdened by the failures of the past, sought to unravel the intricate web of control. They envisioned a world where genuine freedom wasn't a forgotten dream, but a tangible reality, forged from the ashes of the old order.d. No awakening came, no minds unwound. Only the silent, endless march of conformity, a testament to the chilling victory of the unseen order, where freedom was a forgotten dream, and thought, a dangerous relic.
