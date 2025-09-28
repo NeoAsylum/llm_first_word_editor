@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 import os
 from fastmcp import Client
@@ -121,29 +120,30 @@ class GeminiAgentClient:
         gemini_contents = self._convert_messages_to_gemini_content(messages)
 
         try:
-            response = await self.gemini_client.aio.models.generate_content(
-                model=self.gemini_model,
-                contents=gemini_contents,
-                config=types.GenerateContentConfig(
-                    tools=[self.client.session], system_instruction=self.system_prompt
-                ),
-            )
-            full_response_content = response.text
-            tool_calls_from_gemini = []
+            async with self.client:
+                response = await self.gemini_client.aio.models.generate_content(
+                    model=self.gemini_model,
+                    contents=gemini_contents,
+                    config=types.GenerateContentConfig(
+                        tools=[self.client.session], system_instruction=self.system_prompt
+                    ),
+                )
+                full_response_content = response.text
+                tool_calls_from_gemini = []
 
-            if response.function_calls:
-                for fc in response.function_calls:
-                    tool_calls_from_gemini.append(
-                        {"function": {"name": fc.name, "arguments": fc.args}}
-                    )
+                if response.function_calls:
+                    for fc in response.function_calls:
+                        tool_calls_from_gemini.append(
+                            {"function": {"name": fc.name, "arguments": fc.args}}
+                        )
 
-            gemini_response = {
-                "message": {"role": "assistant", "content": full_response_content}
-            }
-            if tool_calls_from_gemini:
-                gemini_response["message"]["tool_calls"] = tool_calls_from_gemini
+                gemini_response = {
+                    "message": {"role": "assistant", "content": full_response_content}
+                }
+                if tool_calls_from_gemini:
+                    gemini_response["message"]["tool_calls"] = tool_calls_from_gemini
 
-            return gemini_response
+                return gemini_response
 
         except genai.errors.ServerError as e:
             logging.error(f"Error communicating with Gemini API: {e}", exc_info=True)
@@ -163,66 +163,3 @@ class GeminiAgentClient:
                     "content": "Agent: An unexpected error occurred. Please try again.",
                 }
             }
-
-    async def run(self):
-        """Runs the main interactive chat loop."""
-        logging.info("Connecting to MCP Agent...")
-        try:
-            async with self.client:
-                messages: List[Dict[str, Any]] = []
-                while True:
-                    try:
-                        prompt = await asyncio.to_thread(input, "\nYou: ")
-                        if prompt.lower() == "exit":
-                            break
-                        if not prompt:
-                            continue
-
-                        messages.append({"role": "user", "content": prompt})
-                        response = await self._chat_with_llm(messages)
-                        logging.debug(
-                            "LLM Response: %s", json.dumps(response, indent=2)
-                        )
-                        messages.append(response["message"])
-
-                        logging.info(f"Agent: {response['message']['content']}")
-
-                    except (KeyboardInterrupt, EOFError):
-                        break
-        except Exception as e:
-            logging.error(f"An error occurred: {e}", exc_info=True)
-        finally:
-            logging.info("\nConnection closed.")
-
-
-async def main():
-    if sys.platform == "win32":
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-    load_dotenv()
-
-    parser = argparse.ArgumentParser(description="Run the Gemini Agent Client.")
-    parser.add_argument(
-        "--gemini_model",
-        type=str,
-        default="gemini-2.5-flash",
-        help="Gemini model to use.",
-    )
-    parser.add_argument(
-        "--system_prompt",
-        type=str,
-        default="You are a helpful assistant. You are the user interface to a word style document editor. You have access to multiple model context protocol tools via a mcp server that allow you to do the users bidding and edit this document. The user can see the document in real time, but can only interact with it through you. He can also not see the tool output, so you have to show him the return values of the tools you call. Always use get_text initially to understand file content. Use get_html to understand file structure. Also, when the user asks you for something use your tools to fullfill his request. Don't ask him for additional information. Get the information yourself using the tools provided.",
-        help="The system prompt to use.",
-    )
-    args = parser.parse_args()
-
-    client_app = GeminiAgentClient(
-        server_url=os.getenv("SERVER_URL", "http://localhost:8000/mcp"),
-        gemini_model=args.gemini_model,
-        system_prompt=args.system_prompt,
-    )
-    await client_app.run()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

@@ -1,16 +1,23 @@
+import sys
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from pydantic import BaseModel
 import uvicorn
-from typing import List
+from typing import Any, Dict, List
 import os
+import asyncio
 
 from word_processor.document import Document
 from word_processor.paragraph import Paragraph
 from word_processor.enums import FormattingType, MarginType
+from word_processor.gemini_client import GeminiAgentClient
+
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="word_processor/static"), name="static")
 
 # Global document instance
 # Initializing with default values, then setting content using methods
@@ -66,6 +73,10 @@ class DeleteRequest(BaseModel):
     start_index: int
     end_index: int
 
+class ChatRequest(BaseModel):
+    message: str
+    history: List[Dict[str, Any]]
+
 
 # --- Response Models ---
 
@@ -89,6 +100,13 @@ def read_root():
     print("Tool call: read_root")
     return FileResponse(index_html_path)
 
+# --- Chat Endpoint ---
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    messages = req.history
+    messages.append({"role": "user", "content": req.message})
+    response = await app.state.gemini_client._chat_with_llm(messages)
+    return response
 
 # --- Document level endpoints ---
 
@@ -187,6 +205,17 @@ def set_margin(req: SetMarginRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.on_event("startup")
+async def startup_event():
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    
+    app.state.gemini_client = GeminiAgentClient(
+        server_url=os.getenv("SERVER_URL", "http://localhost:8000/mcp"),
+        gemini_model="gemini-2.5-flash",
+        system_prompt="You are a helpful assistant. You are the user interface to a word style document editor. You have access to multiple model context protocol tools via a mcp server that allow you to do the users bidding and edit this document. The user can see the document in real time, but can only interact with it through you. He can also not see the tool output, so you have to show him the return values of the tools you call. Always use get_text initially to understand file content. Use get_html to understand file structure. Also, when the user asks you for something use your tools to fullfill his request. Don't ask him for additional information. Get the information yourself using the tools provided."
+    )
 
 
 if __name__ == "__main__":

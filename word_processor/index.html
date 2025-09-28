@@ -2,45 +2,14 @@
 <html>
 <head>
     <title>Word Editor</title>
-    <style>
-        .container {
-            display: flex;
-            width: 100%;
-        }
-        .panel {
-            width: 50%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        #html-source {
-            width: 100%;
-        }
-        #html-source {
-            height: 300px;
-        }
-        #page-preview {
-            border: 1px solid black;
-            aspect-ratio: 210 / 297;
-            height: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        #editor {
-            flex-grow: 1;
-            padding: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>Word Editor</h1>
     <div class="container">
         <div class="panel">
             <h2>Document File Structure</h2>
-            
-            <h3>Body</h3>
             <textarea id="html-source" readonly></textarea>
-            
         </div>
         <div class="panel">
             <h2>Rendered Text</h2>
@@ -50,26 +19,10 @@
         </div>
     </div>
 
-    <script>
-        const editor = document.getElementById('editor');
-        const htmlSource = document.getElementById('html-source');
+    <div id="chat-container"></div>
+    <input type="text" id="chat-input" placeholder="Type your message...">
+    <button id="chat-send">Send</button>
 
-        // Load initial content
-        window.onload = async () => {
-            // Fetch both JSON and HTML content concurrently
-            const [jsonResponse, htmlResponse] = await Promise.all([
-                fetch('/document'),
-                fetch('/document/html')
-            ]);
-
-            // Parse the responses
-            const jsonData = await jsonResponse.json();
-            const htmlData = await htmlResponse.text();
-
-            // Populate the elements
-            htmlSource.value = JSON.stringify(jsonData, null, 2);
-            editor.innerHTML = htmlData;
-        };
-    </script>
+    <script src="/static/script.js"></script>
 </body>
 </html>

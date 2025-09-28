@@ -9,3 +9,4 @@
 2025-09-28 14:00:51,420 - Connection to MCP Agent established.
 2025-09-28 14:00:51,671 - GET SSE connection established
 2025-09-28 14:00:51,671 - Received 202 Accepted
+2025-09-28 16:01:52,184 - GET stream error (non-fatal): 
